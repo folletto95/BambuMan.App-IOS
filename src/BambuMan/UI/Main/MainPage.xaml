@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:BambuMan.Shared.Models;assembly=BambuMan.Shared"
+             xmlns:m="clr-namespace:UraniumUI.Icons.MaterialSymbols;assembly=UraniumUI.Icons.MaterialSymbols"
+             xmlns:main="clr-namespace:BambuMan.UI.Main"
+             
+             xmlns:validation="clr-namespace:InputKit.Shared.Validations;assembly=InputKit.Maui"
+             xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+             xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui"
+             xmlns:validation1="clr-namespace:BambuMan.Validation"
+             xmlns:converters="clr-namespace:BambuMan.Converters"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:shared="clr-namespace:BambuMan"
+
+             x:Class="BambuMan.UI.Main.MainPage"
+             Title="BambuMan Reader"
+             x:DataType="main:MainPageViewModel">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:BoolToObjectConverter x:Key="BoolToColorConverter" TrueObject="{x:Static Colors.Green}" FalseObject="{x:Static Colors.Red}"/>
+            <converters:NoNullToBoolConverter x:Key="NoNullToBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="10">
+
+            <Grid ColumnDefinitions="*,*,*" RowDefinitions="*" Margin="0,0,0,5">
+                <Border Grid.Column="0" StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5" BackgroundColor="{Binding SettingsOk, Converter={StaticResource BoolToColorConverter}}" HeightRequest="26" >
+                    <Label Margin="0" Padding="8,4,8,4" TextColor="White" FontSize="12" HeightRequest="26" HorizontalTextAlignment="Center" Text="SETTINGS"></Label>
+                </Border>
+                <Border Grid.Column="1" StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5" BackgroundColor="{Binding SpoolmanOk, Converter={StaticResource BoolToColorConverter}}" HeightRequest="26" >
+                    <Label Margin="0" Padding="8,4,8,4" TextColor="White" FontSize="12" HeightRequest="26" HorizontalTextAlignment="Center" Text="SPOOLMAN"></Label>
+                </Border>
+                <Border Grid.Column="2" StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5" BackgroundColor="{Binding NfcIsEnabled, Converter={StaticResource BoolToColorConverter}}" HeightRequest="26" >
+                    <Label Margin="0" Padding="8,4,8,4" TextColor="White" FontSize="12" HeightRequest="26" HorizontalTextAlignment="Center" Text="{Binding NfcText}"></Label>
+                </Border>
+            </Grid>
+
+            <VerticalStackLayout x:Name="ErrorMessages" Margin="0,0,0,5" IsVisible="{Binding ErrorMessage, Converter={StaticResource NoNullToBoolConverter}}">
+                <Border StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5" Stroke="Red">
+                    <Label Margin="0" Padding="8,4,8,4" TextColor="Red" FontSize="12">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span FontAttributes="Bold" Text="Error: "></Span>
+                                <Span Text="{Binding ErrorMessage}"></Span>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout x:Name="SuccessMessages" Margin="0,0,0,5" IsVisible="{Binding SuccessMessage, Converter={StaticResource NoNullToBoolConverter}}">
+                <Border StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5" Stroke="Green" BackgroundColor="LightGreen" >
+                    <Label Margin="0" Padding="8,4,8,4" TextColor="Green" FontSize="14">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span FontAttributes="Bold" Text="Success: "></Span>
+                                <Span Text="{Binding SuccessMessage}"></Span>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </Border>
+            </VerticalStackLayout>
+
+            <Border Stroke="#7E570E" StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5" Background="#F2E9DA" Margin="0,0,0,5" Padding="5" IsVisible="{Binding ShowSpoolEdit}">
+                <VerticalStackLayout>
+                    <Label Text="Spool info:" FontAttributes="Bold"></Label>
+
+                    <input:FormView x:Name="FormView" Padding="0" Margin="0">
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*,*" ColumnSpacing="5" RowSpacing="5" Margin="5,5,0,0" Padding="0">
+
+                            <material:TextField x:Name="TfSpoolWeight" Grid.Column="0" Grid.Row="0" TextColor="Black" Title="Weight (g):" Keyboard="Numeric" Text="{Binding SpoolWeight,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Weight}}">
+                                <validation:NumericValidation />
+                                <validation:MinValueValidation MinValue="0" />
+                            </material:TextField>
+
+                            <material:TextField x:Name="TfSpoolEmptyWeight" Grid.Column="1" Grid.Row="0" TextColor="Black" Title="Empty weight (g):" Keyboard="Numeric" Text="{Binding SpoolEmptyWeight,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Settings_backup_restore}}">
+                                <validation:NumericValidation />
+                                <validation:MinValueValidation MinValue="0" />
+                            </material:TextField>
+
+                            <material:TextField x:Name="TfSpoolPrice" Grid.Column="0" Grid.Row="1" TextColor="Black" Title="Price:" Keyboard="Numeric" AllowClear="True" Text="{Binding SpoolPrice,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Sell}}">
+                                <validation1:NumericNullableValidation  />
+                                <validation:MinValueValidation MinValue="0" />
+                            </material:TextField>
+
+                            <material:DatePickerField x:Name="TfSpoolBuyDate" Grid.Column="1" Grid.Row="1" TextColor="Black" Title="Buy date:" Date="{Binding SpoolBuyDate,Mode=TwoWay}" Format="yyyy-MM-dd" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Calendar_month}}" />
+
+                            <material:TextField x:Name="TfSpoolLotNr" Grid.Column="0" Grid.Row="2" TextColor="Black" Title="Lot nr:" AllowClear="True" Text="{Binding SpoolLotNr,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Tag}}" />
+
+                            <material:TextField x:Name="TfSpoolLocation" Grid.Column="1" Grid.Row="2" TextColor="Black" Title="Location:" AllowClear="True" Text="{Binding SpoolLocation,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Map}}" />
+
+                            <Button Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" BackgroundColor="LightGray" TextColor="Black" Text="Cancel" Clicked="CloseButton_OnClicked"/>
+
+                            <Button Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1" StyleClass="FilledButton" Text="Save changes" Clicked="SaveChanges_OnClicked"/>
+
+
+                        </Grid>
+                    </input:FormView>
+                </VerticalStackLayout>
+            </Border>
+
+            <VerticalStackLayout Margin="0,0,0,5" IsVisible="{Binding IsTest}">
+                <Button Clicked="Button_OnClicked" Text="Test Tag" />
+            </VerticalStackLayout>
+
+            <StackLayout IsVisible="{Binding HasInventoryItems}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Text="Inventory:" FontAttributes="Bold" Grid.Column="0"></Label>
+                    <Button Grid.Column="1" Padding="8,0" Margin="0,0,4,0" Text="Clear inventory" BackgroundColor="LightBlue" TextColor="Black" FontSize="12" HeightRequest="20" Clicked="ClearInventory_OnClicked"></Button>
+                </Grid>
+                <StackLayout BindableLayout.ItemsSource="{Binding Inventory, Mode=OneWay}" Orientation="Horizontal">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="shared:InventoryModel">
+                            <Border Stroke="{Binding Color}" StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5" Margin="2" Padding="2,0,2,0" BackgroundColor="{Binding Color}">
+                                <Label Margin="2" BackgroundColor="{Binding Color}" TextColor="White">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding Material}"></Span>
+                                            <Span Text=" x "></Span>
+                                            <Span Text="{Binding Quantity}"></Span>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </StackLayout>
+            </StackLayout>
+
+            <Border HeightRequest="2" BackgroundColor="Gray" Margin="0,5,0,5"></Border>
+
+            <StackLayout>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Text="Logs:" FontAttributes="Bold" Grid.Column="0"></Label>
+                    <Button Grid.Column="1" Padding="8,0" Margin="0,0,4,0" Text="Clear logs" BackgroundColor="LightGray" TextColor="Black" FontSize="12" HeightRequest="20" Clicked="ClearLogs_OnClicked"></Button>
+                    <Button Grid.Column="2" Padding="8,0" Text="Email logs" BackgroundColor="LightBlue" TextColor="Black" FontSize="12" HeightRequest="20" Clicked="EmailLogs_OnClicked"></Button>
+                </Grid>
+
+                <StackLayout BindableLayout.ItemsSource="{Binding Logs, Mode=OneWay}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:LogModel">
+                            <StackLayout>
+                                <Label Text="{Binding Content}" TextColor="{Binding ContentColor}"></Label>
+                            </StackLayout>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </StackLayout>
+            </StackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

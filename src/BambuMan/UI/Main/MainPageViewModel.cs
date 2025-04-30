@@ -1,0 +1,134 @@
+﻿using System.Collections.ObjectModel;
+using BambuMan.Shared;
+using BambuMan.Shared.Enums;
+using BambuMan.Shared.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
+using SpoolMan.Api.Model;
+using LogLevel = BambuMan.Shared.Enums.LogLevel;
+
+namespace BambuMan.UI.Main
+{
+    public partial class MainPageViewModel : ObservableObject, IQueryAttributable
+    {
+#if DEBUG
+        [ObservableProperty] private bool isTest = true;
+#else
+        [ObservableProperty] private bool isTest = false;
+#endif
+
+        [ObservableProperty] private bool hasInventoryItems;
+        [ObservableProperty] private ObservableCollection<InventoryModel> inventory = new();
+
+        [ObservableProperty] private bool deviceIsListening;
+        [ObservableProperty] private ObservableCollection<LogModel> logs = new();
+        [ObservableProperty] private bool nfcIsEnabled;
+        [ObservableProperty] private bool eventsAlreadySubscribed;
+        [ObservableProperty] private bool isDeviceOs;
+
+        [ObservableProperty] private bool showSpoolEdit;
+
+        [ObservableProperty] private decimal? spoolWeight;
+        [ObservableProperty] private decimal? spoolEmptyWeight = 250;
+        [ObservableProperty] private decimal? spoolInitialWeight;
+        [ObservableProperty] private decimal? spoolPrice;
+        [ObservableProperty] private DateTime? spoolBuyDate;
+        [ObservableProperty] private string? spoolLotNr;
+        [ObservableProperty] private string? spoolLocation;
+
+        [ObservableProperty] private bool settingsOk;
+        [ObservableProperty] private bool spoolmanOk;
+
+        [ObservableProperty] private string nfcText = "NFC ENABLED";
+
+        [ObservableProperty] private string? errorMessage;
+        [ObservableProperty] private string? successMessage;
+
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+
+        }
+
+        public Task ClearMessages()
+        {
+            ErrorMessage = null;
+            SuccessMessage = null;
+
+            return Task.CompletedTask;
+        }
+
+        public Task ShowErrorMessage(string message)
+        {
+            ErrorMessage = message;
+            SuccessMessage = null;
+
+            return Task.CompletedTask;
+        }
+
+        public Task ShowSuccessMessage(string message)
+        {
+            ErrorMessage = null;
+            SuccessMessage = message;
+
+            return Task.CompletedTask;
+        }
+
+        public Task AddLog(LogLevel level, string text)
+        {
+            Logs.Insert(0, new LogModel(level, text));
+
+            return Task.CompletedTask;
+        }
+
+        public void ShowSpool(Spool spool)
+        {
+            SpoolWeight = spool.SpoolWeight.GetValueOrDefault() + spool.InitialWeight.GetValueOrDefault() - spool.UsedWeight;
+            SpoolInitialWeight = spool.InitialWeight;
+            SpoolEmptyWeight = spool.SpoolWeight;
+            SpoolPrice = spool.Price;
+            SpoolBuyDate = spool.Extra.TryGetValue(SpoolmanManager.ExtraBuyDate, out var buyDateOut) ? DateTime.Parse(buyDateOut.Replace("\"", "")) : null;
+            SpoolLotNr = spool.LotNr;
+            SpoolLocation = spool.Location;
+            ShowSpoolEdit = true;
+        }
+
+        public async Task Validate(SpoolmanManager spoolmanManager)
+        {
+            await ClearMessages();
+
+            if (string.IsNullOrEmpty(spoolmanManager.ApiUrl))
+            {
+                await ShowErrorMessage("Spoolman url is missing, please fill in settings page!");
+                return;
+            }
+
+            SettingsOk = true;
+
+            if (!spoolmanManager.IsHealth)
+            {
+                await ShowErrorMessage("Spoolman api is not healthy");
+                return;
+            }
+
+            if (spoolmanManager.Status >= SpoolmanManagerStatusType.Ready) SpoolmanOk = true;
+        }
+
+        public void InventorySpool(Spool spool, BambuFillamentInfo info)
+        {
+            HasInventoryItems = true;
+
+            var inventoryModel = Inventory.FirstOrDefault(x => x.Material == spool.Filament.Material);
+
+            if (inventoryModel == null)
+            {
+                Inventory.Add(new InventoryModel(spool.Filament.Material, info.SerialNumber));
+                return;
+            }
+
+            if (!inventoryModel.Tags.Contains(info.SerialNumber))
+            {
+                inventoryModel.Quantity++;
+                inventoryModel.Tags.Add(info.SerialNumber);
+            }
+        }
+    }
+}

@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<ApplicationIcon>appiconv2.ico</ApplicationIcon>
+		<SignAssembly>False</SignAssembly>
+		<AssemblyName>BambuMan</AssemblyName>
+		<PublishDir>bin\Release\net9.0-windows\publish\win-x64\</PublishDir>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<SelfContained>false</SelfContained>
+		<PublishSingleFile>true</PublishSingleFile>
+		<PublishReadyToRun>false</PublishReadyToRun>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Include="appiconv2.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\BambuMan.Shared\BambuMan.Shared.csproj" />
+		<ProjectReference Include="..\SpoolMan.Api\SpoolMan.Api.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="PCSC" Version="7.0.0" />
+		<PackageReference Include="PCSC.Iso7816" Version="7.0.0" />
+	</ItemGroup>
+
+</Project>

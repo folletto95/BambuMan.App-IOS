@@ -1,0 +1,96 @@
+name: CI Build
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.gitignore'
+      - '**/*.gitattributes'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true                     # Disable the .NET logo
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true # Disable the .NET first time experience
+  DOTNET_CLI_TELEMETRY_OPTOUT: true       # Disable sending .NET CLI telemetry
+  GITHUB_VERSION_BASE: 1.0.
+
+jobs:
+
+# MAUI Android Build
+  build-android:
+    runs-on: self-hosted
+    name: Android Build
+    steps:
+
+      - name: Set Build Number Environment Variable
+        run: |
+          echo "GITHUB_VERSION_CODE=$((${{ github.run_number }}+1000))" >> $Env:GITHUB_ENV
+          echo "GITHUB_VERSION=$env:GITHUB_VERSION_BASE$((${{ github.run_number }}+1000))" >> $Env:GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+          
+      - name: Install MAUI Workload
+        run: dotnet workload install maui --ignore-failed-sources
+
+      - name: Restore Dependencies
+        run: dotnet restore src/BambuMan/BambuMan.csproj
+        
+      - name: Build MAUI Android version
+        run: echo "Version ${{ env.GITHUB_VERSION }}"
+
+      - name: Build MAUI Android
+        run: dotnet publish src/BambuMan/BambuMan.csproj -c Release -p:DefineConstants="BUILD_TYPE_LIVE" -p:GITHUB_CI=1 -p:GITHUB_VERSION_CODE="${{ env.GITHUB_VERSION_CODE }}" -p:GITHUB_VERSION="${{ env.GITHUB_VERSION }}" -f net9.0-android --no-restore
+        
+      - name: Upload Android Artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: bambuman-android-ci-build
+          path: src/BambuMan/bin/Release/net9.0-android/*Signed.apk
+          retention-days: 2
+
+# .net desktop application
+  build-desctop:
+    runs-on: self-hosted
+    name: .net Desktop Application
+    steps:
+    
+      - name: Set Build Number Environment Variable
+        run: |
+          echo "GITHUB_VERSION_CODE=$((${{ github.run_number }}+1000))" >> $Env:GITHUB_ENV
+          echo "GITHUB_VERSION=$env:GITHUB_VERSION_BASE$((${{ github.run_number }}+1000))" >> $Env:GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+          
+      - name: Restore Dependencies
+        run: dotnet restore src/BambuMan.Desktop/BambuMan.Desktop.csproj
+                
+      - name: Build .net Desctop version
+        run: echo "Version ${{ env.GITHUB_VERSION }}"
+
+      - name: Build .net Desctop app
+        run: dotnet publish src/BambuMan.Desktop/BambuMan.Desktop.csproj -c Release -p:PublishSingleFile=true -p:SelfContained=false -p:PublishReadyToRun=false -p:DefineConstants="BUILD_TYPE_LIVE" --no-restore /p:AssemblyVersion="${{ env.GITHUB_VERSION }}"
+
+      - name: Upload .net Desctop app Artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: bambuman-desktop-ci-build
+          path: src/BambuMan.Desktop/bin/Release/net9.0-windows/publish/win-x64/*.exe
+          retention-days: 2

@@ -1,0 +1,134 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net9.0-android;net9.0-ios;</TargetFrameworks>
+		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
+		<!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
+
+		<!-- Note for MacCatalyst:
+		The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
+		When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifier>.
+		The Mac App Store will NOT accept apps with ONLY maccatalyst-arm64 indicated;
+		either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
+		<!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
+
+		<OutputType>Exe</OutputType>
+		<RootNamespace>BambuMan</RootNamespace>
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<!-- Display name -->
+		<ApplicationTitle>BambuMan</ApplicationTitle>
+
+		<!-- App Identifier -->
+		<ApplicationId>com.noismaster.bambuman</ApplicationId>
+
+		<!-- Versions -->
+		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
+
+		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
+		<WindowsPackageType>None</WindowsPackageType>
+
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<Title>BambuMan</Title>
+		<Authors>Noismaster</Authors>
+		<Product>BambuMan</Product>
+		<PackageId>BambuMan</PackageId>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="BarcodeScanning.Native.Maui" Version="2.1.8" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
+		<PackageReference Include="CommunityToolkit.Maui.Markup" Version="6.0.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.60" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Sentry.Maui" Version="5.6.0" />
+		<PackageReference Include="Sentry.Serilog" Version="5.6.0" />
+		<PackageReference Include="Serilog" Version="4.2.0" />
+		<PackageReference Include="Serilog.Enrichers.GlobalLogContext" Version="3.0.0" />
+		<PackageReference Include="Serilog.Extensions.Logging" Version="9.0.1" />
+		<PackageReference Include="Serilog.Sinks.Xamarin" Version="1.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- App Icon -->
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#EADFDF" />
+
+		<!-- Splash Screen -->
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#EADFDF" BaseSize="128,128" />
+
+		<!-- Images -->
+		<MauiImage Include="Resources\Images\*" />
+
+		<!-- Custom Fonts -->
+		<MauiFont Include="Resources\Fonts\*" />
+
+		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AndroidResource Remove="NewFolder1\**" />
+	  <AndroidResource Remove="Resources\drawable\**" />
+	  <AndroidResource Remove="Resources\NewFolder\**" />
+	  <AndroidResource Remove="UI\NewFolder\**" />
+	  <Compile Remove="NewFolder1\**" />
+	  <Compile Remove="Resources\drawable\**" />
+	  <Compile Remove="Resources\NewFolder\**" />
+	  <Compile Remove="UI\NewFolder\**" />
+	  <EmbeddedResource Remove="NewFolder1\**" />
+	  <EmbeddedResource Remove="Resources\drawable\**" />
+	  <EmbeddedResource Remove="Resources\NewFolder\**" />
+	  <EmbeddedResource Remove="UI\NewFolder\**" />
+	  <MauiCss Remove="NewFolder1\**" />
+	  <MauiCss Remove="Resources\drawable\**" />
+	  <MauiCss Remove="Resources\NewFolder\**" />
+	  <MauiCss Remove="UI\NewFolder\**" />
+	  <MauiXaml Remove="NewFolder1\**" />
+	  <MauiXaml Remove="Resources\drawable\**" />
+	  <MauiXaml Remove="Resources\NewFolder\**" />
+	  <MauiXaml Remove="UI\NewFolder\**" />
+	  <None Remove="NewFolder1\**" />
+	  <None Remove="Resources\drawable\**" />
+	  <None Remove="Resources\NewFolder\**" />
+	  <None Remove="UI\NewFolder\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.60" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.4" />
+		<PackageReference Include="UraniumUI.Icons.MaterialSymbols" Version="2.11.1" />
+		<PackageReference Include="UraniumUI.Material" Version="2.11.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Resources\Images\" />
+	  <Folder Include="Resources\Values\" />
+	  <Folder Include="Resources\Values\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\BambuMan.Shared\BambuMan.Shared.csproj" />
+	  <ProjectReference Include="..\SpoolMan.Api\SpoolMan.Api.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Resources\Styles\Override.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Settings\SettingsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+	
+	<Target Name="ReplaceManifest" BeforeTargets="PreBuildEvent" Condition=" '$(GITHUB_CI)' == '1' ">
+		<XmlPoke XmlInputPath="Platforms\Android\AndroidManifest.xml" Namespaces="&lt;Namespace Prefix='android' Uri='http://schemas.android.com/apk/res/android' /&gt;" Query="manifest/@android:versionCode" Value="$(GITHUB_VERSION_CODE)" />
+		<XmlPoke XmlInputPath="Platforms\Android\AndroidManifest.xml" Namespaces="&lt;Namespace Prefix='android' Uri='http://schemas.android.com/apk/res/android' /&gt;" Query="manifest/@android:versionName" Value="$(GITHUB_VERSION)" />
+	</Target>
+
+</Project>

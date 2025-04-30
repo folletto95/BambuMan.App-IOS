@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="BambuMan.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:m="clr-namespace:UraniumUI.Icons.MaterialSymbols;assembly=UraniumUI.Icons.MaterialSymbols"
+    xmlns:main="clr-namespace:BambuMan.UI.Main"
+    xmlns:settings="clr-namespace:BambuMan.UI.Settings"
+    FlyoutBehavior="Disabled"
+    Title="BambuMan">
+
+    <Shell.Behaviors>
+        <toolkit:StatusBarBehavior StatusBarColor="#EADFDF" StatusBarStyle="DarkContent" />
+    </Shell.Behaviors>
+
+    <!--<ShellContent Title="Main" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
+    <ShellContent Title="Settings" ContentTemplate="{DataTemplate local:SettingsPage}" Route="SettingsPage" />-->
+
+    <TabBar>
+        <Tab Title="Main">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialSharp" Glyph="{x:Static m:MaterialSharp.House}" />
+            </Tab.Icon>
+            <ShellContent Title="Main" ContentTemplate="{DataTemplate main:MainPage}" Route="MainPage" />
+        </Tab>
+        <Tab Title="Settings">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialSharp" Glyph="{x:Static m:MaterialSharp.Settings}" />
+            </Tab.Icon>
+            <ShellContent Title="Settings" ContentTemplate="{DataTemplate settings:SettingsPage}" Route="SettingsPage" />
+        </Tab>
+    </TabBar>
+</Shell>

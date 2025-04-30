@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:m="clr-namespace:UraniumUI.Icons.MaterialSymbols;assembly=UraniumUI.Icons.MaterialSymbols"
+             xmlns:validation="clr-namespace:InputKit.Shared.Validations;assembly=InputKit.Maui"
+             xmlns:main="clr-namespace:BambuMan.UI.Settings"
+             xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+             xmlns:constants="clr-namespace:BambuMan.Shared;assembly=BambuMan.Shared"
+             xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui"
+             xmlns:validation1="clr-namespace:BambuMan.Validation"
+             x:Class="BambuMan.UI.Settings.SettingsPage"
+             x:DataType="main:SettingsPageViewModel"
+             Title="BambuMan Settings">
+
+    <VerticalStackLayout Padding="10">
+
+        <input:FormView Spacing="10">
+            <Grid ColumnDefinitions="*,45">
+                <material:TextField x:Name="TfSpoolmanUrl" Title="Spoolman url:" Grid.Column="0" Text="{Binding SpoolmanUrl,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Link}}">
+                    <validation:RequiredValidation />
+                    <validation:RegexValidation Message="Invalid url" Pattern="{x:Static constants:Constants.UrlValidation }" />
+                </material:TextField>
+                <ImageButton Grid.Column="1" HeightRequest="35" WidthRequest="35" Margin="4,8,2,2" Padding="2" Clicked="ImageButton_OnClicked" VerticalOptions="Start">
+                    <ImageButton.Source>
+                        <FontImageSource FontFamily="MaterialSharp" Glyph="{x:Static m:MaterialSharp.Qr_code_scanner}" Color="Crimson" />
+                    </ImageButton.Source>
+                </ImageButton>
+            </Grid>
+
+            <material:DatePickerField x:Name="TfBuyDate" Title="Buy date:" Date="{Binding BuyDate,Mode=TwoWay}" Format="yyyy-MM-dd" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Calendar_month}}">
+
+            </material:DatePickerField>
+
+            <material:TextField x:Name="TfPrice" Title="Price:" Keyboard="Numeric" Text="{Binding DefaultPrice,Mode=TwoWay}" AllowClear="True" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Sell}}">
+                <validation1:NumericNullableValidation  />
+                <validation:MinValueValidation MinValue="0" />
+            </material:TextField>
+
+            <material:TextField x:Name="TfLotNr" Title="Lot nr:" Text="{Binding DefaultLotNr,Mode=TwoWay}" AllowClear="True" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Tag}}" />
+
+            <material:TextField x:Name="TfLocation" Title="Location:" Text="{Binding DefaultLocation,Mode=TwoWay}" AllowClear="True" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Map}}" />
+
+            <!--<Button StyleClass="FilledButton" Text="Save changes" input:FormView.IsSubmitButton="True"/>-->
+
+        </input:FormView>
+    </VerticalStackLayout>
+</ContentPage>

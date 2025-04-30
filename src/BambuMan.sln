@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35913.81
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BambuMan", "BambuMan\BambuMan.csproj", "{47FB452E-A8EA-4DDB-8CE0-205A9C48F018}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\ci-build.yml = ..\.github\workflows\ci-build.yml
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpoolMan.Api", "SpoolMan.Api\SpoolMan.Api.csproj", "{EA050484-4370-02AB-F401-4B8A10727D2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpoolMan.Api.Test", "SpoolMan.Api.Test\SpoolMan.Api.Test.csproj", "{ABBE14A0-89C5-E9C1-3819-32612AD458B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BambuMan.Shared", "BambuMan.Shared\BambuMan.Shared.csproj", "{FF74EDD0-B866-4007-862E-5D96161AC74F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BambuMan.Desktop", "BambuMan.Desktop\BambuMan.Desktop.csproj", "{62EFB183-BB09-4DA2-9793-59136B3AD671}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{47FB452E-A8EA-4DDB-8CE0-205A9C48F018}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47FB452E-A8EA-4DDB-8CE0-205A9C48F018}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47FB452E-A8EA-4DDB-8CE0-205A9C48F018}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{47FB452E-A8EA-4DDB-8CE0-205A9C48F018}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47FB452E-A8EA-4DDB-8CE0-205A9C48F018}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47FB452E-A8EA-4DDB-8CE0-205A9C48F018}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{EA050484-4370-02AB-F401-4B8A10727D2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA050484-4370-02AB-F401-4B8A10727D2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA050484-4370-02AB-F401-4B8A10727D2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA050484-4370-02AB-F401-4B8A10727D2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABBE14A0-89C5-E9C1-3819-32612AD458B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABBE14A0-89C5-E9C1-3819-32612AD458B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABBE14A0-89C5-E9C1-3819-32612AD458B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABBE14A0-89C5-E9C1-3819-32612AD458B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF74EDD0-B866-4007-862E-5D96161AC74F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF74EDD0-B866-4007-862E-5D96161AC74F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF74EDD0-B866-4007-862E-5D96161AC74F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF74EDD0-B866-4007-862E-5D96161AC74F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62EFB183-BB09-4DA2-9793-59136B3AD671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62EFB183-BB09-4DA2-9793-59136B3AD671}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62EFB183-BB09-4DA2-9793-59136B3AD671}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62EFB183-BB09-4DA2-9793-59136B3AD671}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F8390EFD-C861-448C-AE37-A902A6530CE3}
+	EndGlobalSection
+EndGlobal
