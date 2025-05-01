@@ -9,9 +9,9 @@ If you use [OpenSpoolMan](https://github.com/drndos/openspoolman) to track your 
 
 ## The app is available in two versions
  - Android applications (you're phone has to support `NFC`)
-   ![android app screenshot](https://bambuman.github.io/android_app.jpg =500x532)
+   <img src="https://bambuman.github.io/android_app.jpg" alt="android app screenshot" width="500" height="532" />
  - Windows desktop application (a `PCSC` compatible `NFC` reader like [ACR122U](https://www.acs.com.hk/en/products/3/acr122u-usb-nfc-reader/) or [ACR1252U](https://www.acs.com.hk/en/products/342/acr1252u-usb-nfc-reader-iii-nfc-forum-certified-reader/) is needed)
-   ![desktop app screenshot](https://bambuman.github.io/desktop_app.jpg =700x411)
+   <img src="https://bambuman.github.io/desktop_app.jpg" alt="desktop app screenshot" width="700" height="411" />
 ## Known limitations
 
  - You can't read filaments in foil bags! The foil blocks the NFC signal. You can still inventory them when you open the bag before use.
@@ -42,9 +42,7 @@ If you use [OpenSpoolMan](https://github.com/drndos/openspoolman) to track your 
 
 If you have f-droid installed on you're phone, you can install BambuMan from our f-droid [repository](https://bambuman.github.io/repo).
 
-![BambuMan f-droid repository](https://bambuman.github.io/repo/index.png =300x300)
-
-
+<img src="https://bambuman.github.io/repo/index.png" alt="BambuMan f-droid repository" width="300" height="300" />
 
 ## Roadmap
 
