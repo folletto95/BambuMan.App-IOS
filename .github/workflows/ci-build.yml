@@ -35,6 +35,12 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
+        
+      - name: Decode keystore file
+        run: |
+          $keystorebase64 = "${{ secrets.ANDROID_KEYSTORE }}" 
+          $keystore = [System.Convert]::FromBase64String($keystorebase64)
+          Set-Content "${{ github.workspace }}/bambuman.keystore" -Value $keystore -AsByteStream
 
       - name: Setup .NET 9
         uses: actions/setup-dotnet@v4
@@ -51,7 +57,7 @@ jobs:
         run: echo "Version ${{ env.GITHUB_VERSION }}"
 
       - name: Build MAUI Android
-        run: dotnet publish src/BambuMan/BambuMan.csproj -c Release -p:DefineConstants="BUILD_TYPE_LIVE" -p:GITHUB_CI=1 -p:GITHUB_VERSION_CODE="${{ env.GITHUB_VERSION_CODE }}" -p:GITHUB_VERSION="${{ env.GITHUB_VERSION }}" -f net9.0-android --no-restore
+        run: dotnet publish src/BambuMan/BambuMan.csproj -c Release -p:DefineConstants="BUILD_TYPE_LIVE" -p:GITHUB_CI=1 -p:GITHUB_VERSION_CODE="${{ env.GITHUB_VERSION_CODE }}" -p:GITHUB_VERSION="${{ env.GITHUB_VERSION }}" -p:AndroidKeyStore=True -p:AndroidSigningKeyStore="${{ github.workspace }}/bambuman.keystore" -p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEYPASSWORD }} -p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEYSTOREALIAS }} -p:AndroidSigningStorePass=${{ secrets.ANDROID_KEYSTOREPASSWORD }} -f net9.0-android --no-restore
         
       - name: Upload Android Artifact
         uses: actions/upload-artifact@v4.6.2
