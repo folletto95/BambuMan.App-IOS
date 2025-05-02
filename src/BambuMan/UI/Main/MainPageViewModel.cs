@@ -114,21 +114,23 @@ namespace BambuMan.UI.Main
 
         public void InventorySpool(Spool spool, BambuFillamentInfo info)
         {
+            if(info.TrayUid == null) return;
+
             HasInventoryItems = true;
 
             var inventoryModel = Inventory.FirstOrDefault(x => x.Material == spool.Filament.Material);
 
             if (inventoryModel == null)
             {
-                Inventory.Add(new InventoryModel(spool.Filament.Material, info.SerialNumber));
+                Inventory.Add(new InventoryModel(spool.Filament.Material, info.TrayUid));
                 return;
             }
 
-            if (!inventoryModel.Tags.Contains(info.SerialNumber))
+            if (!inventoryModel.Tags.Contains(info.TrayUid))
             {
                 inventoryModel.Quantity++;
-                inventoryModel.Tags.Add(info.SerialNumber);
+                inventoryModel.Tags.Add(info.TrayUid);
             }
         }
     }
-}
+} 
