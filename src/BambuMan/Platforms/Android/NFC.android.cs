@@ -26,6 +26,7 @@ namespace BambuMan
         public event NdefMessagePublishedEventHandler? OnMessagePublished;
         public event TagDiscoveredEventHandler? OnTagDiscovered;
         public event EventHandler? OnIOsReadingSessionCancelled;
+        public event EventHandler? OnTagIntentReceived;
         public event TagListeningStatusChangedEventHandler? OnTagListeningStatusChanged;
 
         private readonly NfcAdapter? nfcAdapter;
@@ -288,6 +289,8 @@ namespace BambuMan
 
                 if (currentTag != null)
                 {
+                    OnTagIntentReceived?.Invoke(this, EventArgs.Empty);
+
                     var nTag = GetTagInfo(currentTag);
                     if (nTag == null) return;
 

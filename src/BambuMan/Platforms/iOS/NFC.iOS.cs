@@ -32,6 +32,7 @@ namespace BambuMan
         public event EventHandler? OnIOsReadingSessionCancelled;
         public event OnNfcStatusChangedEventHandler? OnNfcStatusChanged;
         public event TagListeningStatusChangedEventHandler? OnTagListeningStatusChanged;
+        public event EventHandler? OnTagIntentReceived;
 
         private bool isWriting;
         private bool isFormatting;
@@ -470,6 +471,7 @@ namespace BambuMan
         public event EventHandler? OnIOsReadingSessionCancelled;
         public event OnNfcStatusChangedEventHandler? OnNfcStatusChanged;
         public event TagListeningStatusChangedEventHandler? OnTagListeningStatusChanged;
+        public event EventHandler? OnTagIntentReceived;
 
         NFCNdefReaderSession? NfcSession { get; set; }
 

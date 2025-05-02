@@ -258,7 +258,8 @@ namespace BambuMan.UI.Main
             CrossNfc.Current.OnMessageReceived += Current_OnMessageReceived;
             CrossNfc.Current.OnNfcStatusChanged += Current_OnNfcStatusChanged;
             CrossNfc.Current.OnTagListeningStatusChanged += Current_OnTagListeningStatusChanged;
-
+            CrossNfc.Current.OnTagIntentReceived += Current_OnTagIntentReceived;
+            
             if (viewModel.IsDeviceOs) CrossNfc.Current.OnIOsReadingSessionCancelled += Current_OniOSReadingSessionCancelled;
         }
 
@@ -270,10 +271,16 @@ namespace BambuMan.UI.Main
             CrossNfc.Current.OnMessageReceived -= Current_OnMessageReceived;
             CrossNfc.Current.OnNfcStatusChanged -= Current_OnNfcStatusChanged;
             CrossNfc.Current.OnTagListeningStatusChanged -= Current_OnTagListeningStatusChanged;
+            CrossNfc.Current.OnTagIntentReceived -= Current_OnTagIntentReceived;
 
             if (viewModel.IsDeviceOs) CrossNfc.Current.OnIOsReadingSessionCancelled -= Current_OniOSReadingSessionCancelled;
 
             viewModel.EventsAlreadySubscribed = false;
+        }
+
+        private void Current_OnTagIntentReceived(object? sender, EventArgs e)
+        {
+            CloseButton_OnClicked(sender, e);
         }
 
         /// <summary>

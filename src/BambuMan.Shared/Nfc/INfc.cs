@@ -116,5 +116,7 @@ namespace BambuMan.Shared.Nfc
 		/// Event raised when NFC listener status changes
 		/// </summary>
 		event TagListeningStatusChangedEventHandler? OnTagListeningStatusChanged;
+
+		event EventHandler? OnTagIntentReceived;
 	}
 }
