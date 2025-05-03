@@ -47,6 +47,11 @@ If you have f-droid installed on your phone, you can install BambuMan from our f
 
 <img src="https://bambuman.github.io/repo/index.png" alt="BambuMan f-droid repository" width="300" height="300" />
 
+## Tested with 
+
+  - Spoolman v0.22.1
+  - OpenSpoolMan v0.1.8
+
 ## Roadmap
 
  - Dynamic `NFC` tag mapping to `Spoolman DB` external filament (GitHub repo with config file)
