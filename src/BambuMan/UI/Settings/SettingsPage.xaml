@@ -16,9 +16,11 @@
 
         <input:FormView Spacing="10">
             <Grid ColumnDefinitions="*,45">
-                <material:TextField x:Name="TfSpoolmanUrl" Title="Spoolman url:" Grid.Column="0" Text="{Binding SpoolmanUrl,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Link}}">
+                <material:TextField x:Name="TfSpoolmanUrl" Title="Spoolman url:" Grid.Column="0" 
+                                    Text="{Binding SpoolmanUrl,Mode=TwoWay}" 
+                                    Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Link}}">
                     <validation:RequiredValidation />
-                    <validation:RegexValidation Message="Invalid url" Pattern="{x:Static constants:Constants.UrlValidation }" />
+                    <validation:RegexValidation Message="Invalid url, must start with http:// or https://" Pattern="{x:Static constants:Constants.UrlValidation }" />
                 </material:TextField>
                 <ImageButton Grid.Column="1" HeightRequest="35" WidthRequest="35" Margin="4,8,2,2" Padding="2" Clicked="ImageButton_OnClicked" VerticalOptions="Start">
                     <ImageButton.Source>

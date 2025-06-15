@@ -27,6 +27,12 @@
     <ScrollView>
         <VerticalStackLayout Padding="10">
 
+            <Border Stroke="Green" BackgroundColor="#DEFFD1" StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5" Background="#F2E9DA" Margin="0,0,0,5" Padding="5" IsVisible="{Binding NewVersionAvailable}">
+                <VerticalStackLayout>
+                    <Label Text="{Binding NewVersionText}" FontAttributes="Bold" TextColor="Green" FontSize="14"></Label>
+                </VerticalStackLayout>
+            </Border>
+
             <Grid ColumnDefinitions="*,*,*" RowDefinitions="*" Margin="0,0,0,5">
                 <Border Grid.Column="0" StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5" BackgroundColor="{Binding SettingsOk, Converter={StaticResource BoolToColorConverter}}" HeightRequest="26" >
                     <Label Margin="0" Padding="8,4,8,4" TextColor="White" FontSize="12" HeightRequest="26" HorizontalTextAlignment="Center" Text="SETTINGS"></Label>

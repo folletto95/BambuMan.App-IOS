@@ -43,6 +43,9 @@ namespace BambuMan.UI.Main
         [ObservableProperty] private string? errorMessage;
         [ObservableProperty] private string? successMessage;
 
+        [ObservableProperty] private bool newVersionAvailable;
+        [ObservableProperty] private string? newVersionText = "New version available";
+
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
 

@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Text;
-using BambuMan.Interfaces;
+﻿using BambuMan.Interfaces;
 using BambuMan.Shared;
 using BambuMan.Shared.Interfaces;
 using BambuMan.Shared.Nfc;
@@ -9,7 +6,11 @@ using BambuMan.UI.Settings;
 using CommunityToolkit.Maui.Core.Platform;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SpoolMan.Api.Model;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Text;
 using LogLevel = BambuMan.Shared.Enums.LogLevel;
 
 namespace BambuMan.UI.Main
@@ -145,6 +146,8 @@ namespace BambuMan.UI.Main
 
                     await AutoStartAsync().ConfigureAwait(false);
                 }
+                
+                await CheckVersion().ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -384,6 +387,34 @@ namespace BambuMan.UI.Main
 
         #endregion
 
+        #region Check for new version
+
+        private async Task CheckVersion()
+        {
+            await Task.Delay(500);
+
+            try
+            {
+                var httpClient = new HttpClient();
+                var request = await httpClient.GetAsync("https://api.github.com/repos/bambuman/BambuMan.App/releases/latest");
+                var content = await request.Content.ReadAsStringAsync();
+                
+                dynamic data = JObject.Parse(content);
+                
+                var currentTagName = $"v{BuildVersionModel.CurrentBuildVersion}";
+                string tagName = data["tag_name"]?.ToString() ?? currentTagName;
+
+                viewModel.NewVersionAvailable = !tagName.Equals(currentTagName, StringComparison.CurrentCultureIgnoreCase);
+                viewModel.NewVersionText = $"New version available: {tagName}";
+            }
+            catch (Exception)
+            {
+                //ignore
+            }
+        }
+
+        #endregion
+
         #region Test Stuff
 
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
@@ -391,7 +422,7 @@ namespace BambuMan.UI.Main
         {
             try
             {
-                var json = "{\"SerialNumber\":\"2A97DC73\",\"TagManufacturerData\":\"EggEAAQTc6BRVeCQ\",\"MaterialVariantIdentifier\":\"A01-B3\",\"UniqueMaterialIdentifier\":\"FA01\",\"FilamentType\":\"PLA\",\"DetailedFilamentType\":\"PLA Matte\",\"Color\":\"0078BFFF\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":55,\"DryingTime\":8,\"BedTemperatureType\":1,\"BedTemperature\":35,\"MaxTemperatureForHotend\":230,\"MinTemperatureForHotend\":190,\"XCamInfo\":\"0AfQB+gD6AMzMzM/\",\"NozzleDiameter\":0.2,\"TrayUid\":\"780B2E7DE43C4557A43A9EBA81ACD240\",\"SpoolWidth\":1149,\"ProductionDateTime\":\"2024-08-03T17:09:00\",\"ProductionDateTimeShort\":\"A2408030045\",\"FilamentLength\":315,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\"}";
+                var json = "{\"SerialNumber\":\"C3DB40A2\",\"TagManufacturerData\":\"+ggEAARS8na7x5uQ\",\"MaterialVariantIdentifier\":\"A00-D0\",\"UniqueMaterialIdentifier\":\"FA00\",\"FilamentType\":\"PLA\",\"DetailedFilamentType\":\"PLA Basic\",\"Color\":\"8E9089FF\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":55,\"DryingTime\":8,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":230,\"MinTemperatureForHotend\":190,\"XCamInfo\":\"0AfQB+gD6AOamRk/\",\"NozzleDiameter\":0.2,\"TrayUid\":\"F1FACEE5124249F6AEB7DCEC0AAE0C4F\",\"SpoolWidth\":2875,\"ProductionDateTime\":\"2025-01-20T19:14:00\",\"ProductionDateTimeShort\":\"20250120\",\"FilamentLength\":330,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"A00-D0-1.75-1000\"}";
                 var bambuFillamentInfo = JsonConvert.DeserializeObject<BambuFillamentInfo>(json);
 
                 json = JsonConvert.SerializeObject(bambuFillamentInfo, Formatting.Indented);

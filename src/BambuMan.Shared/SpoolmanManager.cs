@@ -364,7 +364,7 @@ namespace BambuMan.Shared
             }
             else query = query.Where(x => !x.Name.Contains("Support", StringComparison.CurrentCultureIgnoreCase));
 
-            if (info.DetailedFilamentType?.Contains("Basic", StringComparison.CurrentCultureIgnoreCase) ?? false) query = query.Where(x => x.Finish == null);
+            if (info.DetailedFilamentType?.Contains("Basic", StringComparison.CurrentCultureIgnoreCase) ?? false) query = query.Where(x => x.Finish == null && x.Pattern == null);
             else if (info.DetailedFilamentType?.Contains("Matte", StringComparison.CurrentCultureIgnoreCase) ?? false) query = query.Where(x => x.Finish == Finish.Matte);
             else if (info.DetailedFilamentType?.Contains("Glow", StringComparison.CurrentCultureIgnoreCase) ?? false) query = query.Where(x => x.Glow == true);
             else if (info.DetailedFilamentType?.Contains("Silk", StringComparison.CurrentCultureIgnoreCase) ??
