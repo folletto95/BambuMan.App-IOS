@@ -1,4 +1,5 @@
-﻿using BambuMan.Shared.Enums;
+﻿using System.Diagnostics;
+using BambuMan.Shared.Enums;
 using BambuMan.Shared.Models;
 using Microsoft.Extensions.Hosting;
 using SpoolMan.Api.Api;
@@ -328,7 +329,9 @@ namespace BambuMan.Shared
             var material = BambuLabExternalFilaments.Where(x => x.Material == info.FilamentType).ToArray();
 #endif
             var query = BambuLabExternalFilaments
-                .Where(x => x.Material == info.FilamentType || 
+                .Where(x => x.Material == info.FilamentType ||
+                            info.DetailedFilamentType == "PA-CF" && x.Material == "PA6-CF" ||
+                            info.DetailedFilamentType == "PAHT-CF" && x.Material == "PAHT-CF" ||
                             info.DetailedFilamentType == "PLA Wood" && x.Material == "PLA+WOOD" ||
                             info.DetailedFilamentType == "TPU for AMS" && x.Material == "TPU" && x.Name.StartsWith("For AMS"))
                 .Where(x => x.ColorHex == color ||
@@ -377,6 +380,34 @@ namespace BambuMan.Shared
 
             var result = query.ToList();
 
+            #region test if spool info is same only weight differs, select closest weight
+
+            if (result.Count > 1)
+            {
+                var typeGroup = result.GroupBy(x =>
+                {
+                    var spoolType = x.SpoolType switch
+                    {
+                        SpoolType.Cardboard => "c",
+                        SpoolType.Plastic => "p",
+                        SpoolType.Metal => "m",
+                        _ => "n"
+                    };
+                    
+                    return $"{x.Manufacturer}|{x.Material}|{x.Name}|{x.Diameter * 100:0}|{spoolType}";
+                }).ToList();
+                
+                if (typeGroup.Count == 1)
+                {
+                    var bestMatchWeight = typeGroup.First().OrderByDescending(x => x.SpoolWeight).FirstOrDefault(x => x.SpoolWeight <= info.SpoolWeight) ??
+                                          typeGroup.First().OrderBy(x => x.SpoolWeight).FirstOrDefault(x => x.SpoolWeight > info.SpoolWeight);
+
+                    if (bestMatchWeight != null) result = [bestMatchWeight];
+                }
+            }
+
+            #endregion
+            
             switch (result.Count)
             {
                 case > 1:
