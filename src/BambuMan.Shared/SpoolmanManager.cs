@@ -328,16 +328,18 @@ namespace BambuMan.Shared
             // ReSharper disable once UnusedVariable
             var material = BambuLabExternalFilaments.Where(x => x.Material == info.FilamentType).ToArray();
 #endif
+            //6e88bc
+
             var query = BambuLabExternalFilaments
                 .Where(x => x.Material == info.FilamentType ||
                             info.DetailedFilamentType == "PA-CF" && x.Material == "PA6-CF" ||
                             info.DetailedFilamentType == "PAHT-CF" && x.Material == "PAHT-CF" ||
                             info.DetailedFilamentType == "PLA Wood" && x.Material == "PLA+WOOD" ||
                             info.DetailedFilamentType == "TPU for AMS" && x.Material == "TPU" && x.Name.StartsWith("For AMS"))
-                .Where(x => x.ColorHex == color ||
-                            (info.FilamentType == "ASA" && color == "FFFFFF" && x.ColorHex == "FFFAF2") || //ASA filament hex color is different on spoolman db vs tag
-                            (info.DetailedFilamentType == "PETG HF" && color == "BC0900" && x.ColorHex == "EB3A3A") ||  //PETG HF red filament hex color is different on spoolman db vs tag
-                            (info.DetailedFilamentType == "PETG Translucent" && color == "000000" && x.ColorHex == "FFFFFF"))  //PETG Translucent clear filament hex color is different on spoolman db vs tag
+                .Where(x => (x.ColorHex?.Equals(color, StringComparison.CurrentCultureIgnoreCase) ?? false) ||
+                            (info.FilamentType == "ASA" && color == "FFFFFF" && (x.ColorHex?.Equals("FFFAF2", StringComparison.CurrentCultureIgnoreCase) ?? false)) || //ASA filament hex color is different on spoolman db vs tag
+                            (info.DetailedFilamentType == "PETG HF" && color == "BC0900" && (x.ColorHex?.Equals("EB3A3A", StringComparison.CurrentCultureIgnoreCase) ?? false)) ||  //PETG HF red filament hex color is different on spoolman db vs tag
+                            (info.DetailedFilamentType == "PETG Translucent" && color == "000000" && (x.ColorHex?.Equals("FFFFFF", StringComparison.CurrentCultureIgnoreCase) ?? false)))  //PETG Translucent clear filament hex color is different on spoolman db vs tag
                 .Where(x => x.Translucent == transparent || x.Translucent == null && !transparent);
 
             if (info.DetailedFilamentType?.Contains("Support", StringComparison.CurrentCultureIgnoreCase) ?? false)
@@ -347,13 +349,20 @@ namespace BambuMan.Shared
                 //white translucent Support for PLA is identified as black. Don't know if black is same 
                 if (info is { DetailedFilamentType: "Support for PLA", MaterialVariantIdentifier: "S05-C0" })
                 {
+                    nameToSearch = "Support for PLA/PETG Nature";
+                    hexColor = "FFFFFF";
+                }
+                
+                //white translucent Support for PLA is identified as black. Don't know if black is same 
+                if (info is { DetailedFilamentType: "Support W", MaterialVariantIdentifier: "S00-W0" })
+                {
                     nameToSearch = "Support for PLA White";
                     hexColor = "FFFFFF";
                 }
 
                 query = BambuLabExternalFilaments
                     .Where(x => x.Name.StartsWith(nameToSearch, StringComparison.CurrentCultureIgnoreCase))
-                    .Where(x => x.ColorHex == hexColor);
+                    .Where(x => x.ColorHex?.Equals(hexColor, StringComparison.CurrentCultureIgnoreCase) ?? false);
             }
             //multi color spool
             else if (info.ColorCount.GetValueOrDefault() > 1)
