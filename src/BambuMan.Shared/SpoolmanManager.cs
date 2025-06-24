@@ -328,8 +328,7 @@ namespace BambuMan.Shared
             // ReSharper disable once UnusedVariable
             var material = BambuLabExternalFilaments.Where(x => x.Material == info.FilamentType).ToArray();
 #endif
-            //6e88bc
-
+            
             var query = BambuLabExternalFilaments
                 .Where(x => x.Material == info.FilamentType ||
                             info.DetailedFilamentType == "PA-CF" && x.Material == "PA6-CF" ||

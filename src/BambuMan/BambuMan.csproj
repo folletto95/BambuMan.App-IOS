@@ -102,6 +102,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.80" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.6" />
+		<PackageReference Include="UraniumUI.Icons.FontAwesome" Version="2.12.1" />
 		<PackageReference Include="UraniumUI.Icons.MaterialSymbols" Version="2.12.1" />
 		<PackageReference Include="UraniumUI.Material" Version="2.12.1" />
 	</ItemGroup>
