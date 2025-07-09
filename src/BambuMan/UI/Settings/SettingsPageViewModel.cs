@@ -9,6 +9,12 @@ namespace BambuMan.UI.Settings
         [ObservableProperty] private string? defaultLotNr;
         [ObservableProperty] private string? defaultLocation;
         [ObservableProperty] private DateTime? buyDate;
+        [ObservableProperty] private bool unknownFilamentEnabled;
+        [ObservableProperty] private bool showLogsOnMainPage;
+        [ObservableProperty] private bool showKeyboardOnSpoolRead;
+        [ObservableProperty] private IEnumerable<string> existingLocations = [];
+        
+        [ObservableProperty] private bool locationsFetched;
 
         public async void ApplyQueryAttributes(IDictionary<string, object> query)
         {

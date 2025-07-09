@@ -11,6 +11,7 @@ using SpoolMan.Api.Model;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
+using BambuMan.Shared.Enums;
 using LogLevel = BambuMan.Shared.Enums.LogLevel;
 
 namespace BambuMan.UI.Main
@@ -31,23 +32,29 @@ namespace BambuMan.UI.Main
             InitializeComponent();
 
             this.spoolmanManager = spoolmanManager;
+
             this.logger = logger;
             this.toneGenerator = toneGenerator;
             this.invokeIndent = invokeIndent;
             this.viewModel = viewModel;
             BindingContext = viewModel;
 
+            viewModel.ShowLogsOnMainPage = Preferences.Default.Get(SettingsPage.ShowLogsOnMainPage, true);
+            viewModel.ShowKeyboardOnSpoolRead = Preferences.Default.Get(SettingsPage.ShowKeyboardOnSpoolRead, true);
+
             spoolmanManager.AppVersion = BuildVersionModel.CurrentBuildVersion;
             spoolmanManager.ShowLogs = true;
             spoolmanManager.ApiUrl = Preferences.Default.Get(SettingsPage.KeySpoolmanUrl, string.Empty);
+            spoolmanManager.UnknownFilamentEnabled = Preferences.Default.Get(SettingsPage.UnknownFilamentEnabled, true);
 
             spoolmanManager.OnStatusChanged += SpoolmanManagerOnStatusChanged;
             spoolmanManager.OnLogMessage += SpoolmanManagerOnLogMessage;
             spoolmanManager.OnShowMessage += SpoolmanManagerOnShowMessage;
             spoolmanManager.OnSpoolFound += SpoolmanManagerOnSpoolFound;
             spoolmanManager.OnPlayErrorTone += SpoolmanManagerOnPlayErrorTone;
+            spoolmanManager.OnLocationsLoaded += SpoolmanManagerOnLocationsLoaded;
         }
-        
+
         private async void SpoolmanManagerOnPlayErrorTone()
         {
             try
@@ -65,16 +72,19 @@ namespace BambuMan.UI.Main
             try
             {
                 viewModel.InventorySpool(spool, info);
-                
+
                 currentSpool = spool;
                 currentBambuFillamentInfo = info;
 
                 viewModel.ShowSpool(spool);
 
-                TfSpoolWeight.Focus();
-                TfSpoolWeight.SelectAllText();
+                if (viewModel.ShowKeyboardOnSpoolRead)
+                {
+                    TfSpoolWeight.Focus();
+                    TfSpoolWeight.SelectAllText();
 
-                await TfSpoolWeight.EntryView.ShowKeyboardAsync(CancellationToken.None);
+                    await TfSpoolWeight.EntryView.ShowKeyboardAsync(CancellationToken.None);
+                }
             }
             catch (Exception e)
             {
@@ -113,6 +123,10 @@ namespace BambuMan.UI.Main
         {
             try
             {
+                if (viewModel.SpoolmanConnecting && spoolmanManager.Status == SpoolmanManagerStatusType.Ready) await viewModel.ShowInfoMessage("Ready to read spools.");
+
+                if (spoolmanManager.Status >= SpoolmanManagerStatusType.Ready) viewModel.SpoolmanConnecting = false;
+
                 await viewModel.Validate(spoolmanManager);
             }
             catch (Exception e)
@@ -121,16 +135,33 @@ namespace BambuMan.UI.Main
             }
         }
 
+
+        private void SpoolmanManagerOnLocationsLoaded()
+        {
+            viewModel.ExistingLocations = spoolmanManager?.ExistingLocations ?? [];
+        }
+
         protected override async void OnAppearing()
         {
             try
             {
                 base.OnAppearing();
+                
+                viewModel.ShowSpoolEdit = false;
+                currentSpool = null;
+                currentBambuFillamentInfo = null;
 
+                viewModel.ShowLogsOnMainPage = Preferences.Default.Get(SettingsPage.ShowLogsOnMainPage, true);
+                viewModel.ShowKeyboardOnSpoolRead = Preferences.Default.Get(SettingsPage.ShowKeyboardOnSpoolRead, true);
+                
+                spoolmanManager.ApiUrl = Preferences.Default.Get(SettingsPage.KeySpoolmanUrl, string.Empty);
+                spoolmanManager.UnknownFilamentEnabled = Preferences.Default.Get(SettingsPage.UnknownFilamentEnabled, true);
+
+                viewModel.SpoolmanOk = false;
+                viewModel.SpoolmanConnecting = true;
+                
                 //viewModel.Logs.Clear();
                 await viewModel.Validate(spoolmanManager);
-
-                spoolmanManager.ApiUrl = Preferences.Default.Get(SettingsPage.KeySpoolmanUrl, string.Empty);
 
                 await spoolmanManager.Init();
 
@@ -146,7 +177,7 @@ namespace BambuMan.UI.Main
 
                     await AutoStartAsync().ConfigureAwait(false);
                 }
-                
+
                 await CheckVersion().ConfigureAwait(false);
             }
             catch (Exception e)
@@ -262,7 +293,7 @@ namespace BambuMan.UI.Main
             CrossNfc.Current.OnNfcStatusChanged += Current_OnNfcStatusChanged;
             CrossNfc.Current.OnTagListeningStatusChanged += Current_OnTagListeningStatusChanged;
             CrossNfc.Current.OnTagIntentReceived += Current_OnTagIntentReceived;
-            
+
             if (viewModel.IsDeviceOs) CrossNfc.Current.OnIOsReadingSessionCancelled += Current_OniOSReadingSessionCancelled;
         }
 
@@ -398,9 +429,9 @@ namespace BambuMan.UI.Main
                 var httpClient = new HttpClient();
                 var request = await httpClient.GetAsync("https://api.github.com/repos/bambuman/BambuMan.App/releases/latest");
                 var content = await request.Content.ReadAsStringAsync();
-                
+
                 dynamic data = JObject.Parse(content);
-                
+
                 var currentTagName = $"v{BuildVersionModel.CurrentBuildVersion}";
                 string tagName = data["tag_name"]?.ToString() ?? currentTagName;
 
@@ -422,7 +453,10 @@ namespace BambuMan.UI.Main
         {
             try
             {
-                var json = "{\"SerialNumber\":\"C3DB40A2\",\"TagManufacturerData\":\"+ggEAARS8na7x5uQ\",\"MaterialVariantIdentifier\":\"A00-D0\",\"UniqueMaterialIdentifier\":\"FA00\",\"FilamentType\":\"PLA\",\"DetailedFilamentType\":\"PLA Basic\",\"Color\":\"8E9089FF\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":55,\"DryingTime\":8,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":230,\"MinTemperatureForHotend\":190,\"XCamInfo\":\"0AfQB+gD6AOamRk/\",\"NozzleDiameter\":0.2,\"TrayUid\":\"F1FACEE5124249F6AEB7DCEC0AAE0C4F\",\"SpoolWidth\":2875,\"ProductionDateTime\":\"2025-01-20T19:14:00\",\"ProductionDateTimeShort\":\"20250120\",\"FilamentLength\":330,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"A00-D0-1.75-1000\"}";
+                //var json = "{\"SerialNumber\":\"C3DB40A2\",\"TagManufacturerData\":\"+ggEAARS8na7x5uQ\",\"MaterialVariantIdentifier\":\"A00-D0\",\"UniqueMaterialIdentifier\":\"FA00\",\"FilamentType\":\"PLA\",\"DetailedFilamentType\":\"PLA Basic\",\"Color\":\"8E9089FF\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":55,\"DryingTime\":8,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":230,\"MinTemperatureForHotend\":190,\"XCamInfo\":\"0AfQB+gD6AOamRk/\",\"NozzleDiameter\":0.2,\"TrayUid\":\"F1FACEE5124249F6AEB7DCEC0AAE0C4F\",\"SpoolWidth\":2875,\"ProductionDateTime\":\"2025-01-20T19:14:00\",\"ProductionDateTimeShort\":\"20250120\",\"FilamentLength\":330,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"A00-D0-1.75-1000\"}";
+
+                var json = "{\"SerialNumber\":\"83EC9A1C\",\"TagManufacturerData\":\"6QgEAAR8EZ2x4zmQ\",\"MaterialVariantIdentifier\":\"A17-R1\",\"UniqueMaterialIdentifier\":\"FA17\",\"FilamentType\":\"PLA\",\"DetailedFilamentType\":\"PLA Translucent\",\"Color\":\"F5B6CD80\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":55,\"DryingTime\":8,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":240,\"MinTemperatureForHotend\":200,\"XCamInfo\":\"AAAAAAAAAAAAAAAA\",\"NozzleDiameter\":0.2,\"TrayUid\":\"2DC9E553D1924FA89FBB893C9E921DBA\",\"SpoolWidth\":666,\"ProductionDateTime\":\"2024-12-20T09:40:00\",\"ProductionDateTimeShort\":\"20241220\",\"FilamentLength\":345,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"A17-R1-1.75-1000\"}";
+
                 var bambuFillamentInfo = JsonConvert.DeserializeObject<BambuFillamentInfo>(json);
 
                 json = JsonConvert.SerializeObject(bambuFillamentInfo, Formatting.Indented);

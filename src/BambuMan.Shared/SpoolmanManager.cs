@@ -1,29 +1,30 @@
-﻿using System.Diagnostics;
-using BambuMan.Shared.Enums;
+﻿using BambuMan.Shared.Enums;
 using BambuMan.Shared.Models;
-using Microsoft.Extensions.Hosting;
-using SpoolMan.Api.Api;
-using SpoolMan.Api.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using SpoolMan.Api.Api;
 using SpoolMan.Api.Client;
+using SpoolMan.Api.Extensions;
 using SpoolMan.Api.Model;
-using LogLevel = BambuMan.Shared.Enums.LogLevel;
 using System.Net.Http.Headers;
 using System.Text;
-using Newtonsoft.Json;
+using LogLevel = BambuMan.Shared.Enums.LogLevel;
 
 namespace BambuMan.Shared
 {
     public class SpoolmanManager(ILogger<SpoolmanManager>? logger)
     {
         public delegate void StatusChangedEventHandler();
+        public delegate void LocationsLoadedEventHandler();
         public delegate void ShowMessageEventHandler(bool isError, string message);
         public delegate void LogMessageEventHandler(LogLevel level, string message);
         public delegate void SpoolFoundEventHandler(Spool spool, BambuFillamentInfo info);
         public delegate void PlayErrorToneEventHandler();
 
         public event StatusChangedEventHandler? OnStatusChanged;
+        public event LocationsLoadedEventHandler? OnLocationsLoaded;
         public event ShowMessageEventHandler? OnShowMessage;
         public event LogMessageEventHandler? OnLogMessage;
         public event SpoolFoundEventHandler? OnSpoolFound;
@@ -42,6 +43,8 @@ namespace BambuMan.Shared
 
         public string? ApiUrl { get; set; }
 
+        public bool UnknownFilamentEnabled { get; set; } = false;
+
         public SpoolManDefaults Defaults { get; } = new();
 
         public bool IsHealth { get; set; }
@@ -49,6 +52,8 @@ namespace BambuMan.Shared
         public SpoolmanManagerStatusType Status { get; private set; } = SpoolmanManagerStatusType.Initializing;
 
         public Vendor? BambuLabsVendor { get; set; }
+
+        public string[] ExistingLocations { get; set; } = [];
 
         /// <summary>
         /// All external filaments
@@ -59,6 +64,11 @@ namespace BambuMan.Shared
         /// Bambu lab's external filaments
         /// </summary>
         public List<ExternalFilament> BambuLabExternalFilaments { get; set; } = new();
+
+        /// <summary>
+        /// Unknown filament, if no filament is found or multiple result where found, return this
+        /// </summary>
+        public ExternalFilament UnknownFilament { get; } = GenerateUnknownFilament();
 
         public async Task Init()
         {
@@ -82,6 +92,7 @@ namespace BambuMan.Shared
                         options.AddApiHttpClients(client =>
                         {
                             client.BaseAddress = new Uri(apiUrl);
+                            client.Timeout = TimeSpan.FromSeconds(5);
 
                             if (!string.IsNullOrEmpty(client.BaseAddress.UserInfo))
                             {
@@ -99,20 +110,22 @@ namespace BambuMan.Shared
                 await Task.Delay(500);
 
                 await CheckDefaultValues();
+
                 await LoadAllExternalFilaments();
+
+                await LoadLocations();
 
                 await Task.Delay(500);
 
                 await LogAndSetStatus(SpoolmanManagerStatusType.Ready, LogLevel.Success, "Ready to inventory fillament");
-
             }
             catch (HttpRequestException ex)
             {
-                OnLogMessage?.Invoke(LogLevel.Error, ex.ToString());
+                await LogAndSetStatus(SpoolmanManagerStatusType.Error, LogLevel.Error, ex.ToString());
             }
             catch (Exception e)
             {
-                OnLogMessage?.Invoke(LogLevel.Error, e.ToString());
+                await LogAndSetStatus(SpoolmanManagerStatusType.Error, LogLevel.Error, e.ToString());
                 logger?.LogError(e, "Error connecting to api");
             }
         }
@@ -270,6 +283,8 @@ namespace BambuMan.Shared
                 AllExternalFilaments = list;
                 BambuLabExternalFilaments = list.Where(x => x.Manufacturer == DefaultBambuLabVendor).ToList();
 
+                await ExtendWithMissingFilaments(BambuLabExternalFilaments);
+
                 await LogAndSetStatus(SpoolmanManagerStatusType.AllExternalFilamentsLoaded, LogLevel.Information, $"Loaded all external filaments: {AllExternalFilaments.Count}");
                 await Log(LogLevel.Information, $"Found '{DefaultBambuLabVendor}' filaments: {BambuLabExternalFilaments.Count}");
             }
@@ -281,12 +296,40 @@ namespace BambuMan.Shared
             #endregion
         }
 
+        private async Task LoadLocations()
+        {
+            if (apiHost == null) return;
+
+            #region Load locations
+
+            var settingApi = apiHost.Services.GetRequiredService<ISettingApi>();
+
+            var locationsRequest = await settingApi.GetSettingSettingKeyGetOrDefaultAsync("locations");
+
+            if (locationsRequest != null && locationsRequest.TryOk(out var locations))
+            {
+                ExistingLocations = JsonConvert.DeserializeObject<string[]>(locations.Value) ?? [];
+
+                OnLocationsLoaded?.Invoke();
+            }
+
+            #endregion
+        }
+
         public async Task InventorySpool(BambuFillamentInfo info, DateTime? buyDate, decimal? price, string? lotNr, string? location)
         {
             if (apiHost == null) return;
 
             var externalFilament = await FindExternalFilament(info);
-            if (externalFilament == null) return;
+
+            switch (UnknownFilamentEnabled)
+            {
+                case false when externalFilament == null:
+                    return;
+                case true when externalFilament == null:
+                    externalFilament = UnknownFilament;
+                    break;
+            }
 
             await Log(LogLevel.Debug, externalFilament.ToString());
 
@@ -328,7 +371,6 @@ namespace BambuMan.Shared
             // ReSharper disable once UnusedVariable
             var material = BambuLabExternalFilaments.Where(x => x.Material == info.FilamentType).ToArray();
 #endif
-            //6e88bc
 
             var query = BambuLabExternalFilaments
                 .Where(x => x.Material == info.FilamentType ||
@@ -352,7 +394,7 @@ namespace BambuMan.Shared
                     nameToSearch = "Support for PLA/PETG Nature";
                     hexColor = "FFFFFF";
                 }
-                
+
                 //white translucent Support for PLA is identified as black. Don't know if black is same 
                 if (info is { DetailedFilamentType: "Support W", MaterialVariantIdentifier: "S00-W0" })
                 {
@@ -387,6 +429,9 @@ namespace BambuMan.Shared
             if (info.DetailedFilamentType?.Equals("PETG HF", StringComparison.CurrentCultureIgnoreCase) ?? false)
                 query = query.Where(x => x.Name.StartsWith("HF "));
 
+            if (info.DetailedFilamentType?.Equals("PC FR", StringComparison.CurrentCultureIgnoreCase) ?? false)
+                query = query.Where(x => x.Name.StartsWith("FR "));
+
             var result = query.ToList();
 
             #region test if spool info is same only weight differs, select closest weight
@@ -402,10 +447,10 @@ namespace BambuMan.Shared
                         SpoolType.Metal => "m",
                         _ => "n"
                     };
-                    
+
                     return $"{x.Manufacturer}|{x.Material}|{x.Name}|{x.Diameter * 100:0}|{spoolType}";
                 }).ToList();
-                
+
                 if (typeGroup.Count == 1)
                 {
                     var bestMatchWeight = typeGroup.First().OrderByDescending(x => x.SpoolWeight).FirstOrDefault(x => x.SpoolWeight <= info.SpoolWeight) ??
@@ -416,7 +461,10 @@ namespace BambuMan.Shared
             }
 
             #endregion
-            
+
+            var spoolmanErrorLevel = UnknownFilamentEnabled ? SpoolmanManagerStatusType.Ready : SpoolmanManagerStatusType.Error;
+            var logLevel = UnknownFilamentEnabled ? LogLevel.Warning : LogLevel.Error;
+
             switch (result.Count)
             {
                 case > 1:
@@ -426,12 +474,12 @@ namespace BambuMan.Shared
                             await Log(LogLevel.Debug, item.ToString());
                         }
 
-                        await LogAndSetStatus(SpoolmanManagerStatusType.Error, LogLevel.Error, "Found more then 1 matching filament", new Exception($"{JsonConvert.SerializeObject(info)}\r\n{string.Join("\t\n", result.Select(x => x.ToString()))}"));
+                        await LogAndSetStatus(spoolmanErrorLevel, logLevel, "Found more then 1 matching filament", new Exception($"{JsonConvert.SerializeObject(info)}\r\n{string.Join("\t\n", result.Select(x => x.ToString()))}"));
                         OnPlayErrorTone?.Invoke();
                         return null;
                     }
                 case 0:
-                    await LogAndSetStatus(SpoolmanManagerStatusType.Error, LogLevel.Error, "No matching filament found", new Exception($"{JsonConvert.SerializeObject(info)}"));
+                    await LogAndSetStatus(spoolmanErrorLevel, logLevel, "No matching filament found", new Exception($"{JsonConvert.SerializeObject(info)}"));
                     OnPlayErrorTone?.Invoke();
                     return null;
             }
@@ -496,6 +544,8 @@ namespace BambuMan.Shared
 
             if (buyDate != null) extraValues[ExtraBuyDate] = $"\"{buyDate:yyyy-MM-dd}Z00:00:00\"";
 
+            var comment = filament.ExternalId == UnknownFilament.Id ? $"Filament: {info.DetailedFilamentType}, Color: #{info.Color}, Spool weight: {info.SpoolWeight:0.#}g" : "";
+
             var spoolParams = new SpoolParameters(filament.Id,
                 //firstUsed: new Option<string?>(externalFilament.FirstUsed),
                 //lastUsed: new Option<string?>(externalFilament.LastUsed),
@@ -506,7 +556,7 @@ namespace BambuMan.Shared
                 //usedWeight: new Option<string?>(externalFilament.UsedWeight),
                 location: new Option<string?>(location),
                 lotNr: new Option<string?>(lotNr),
-                //comment: new Option<string?>(externalFilament.Comment),
+                comment: new Option<string?>(comment),
                 //archived: new Option<string?>(externalFilament.Archived),
                 extra: new Option<Dictionary<string, string>?>(extraValues)
             );
@@ -611,6 +661,78 @@ namespace BambuMan.Shared
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(level), level, null);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        #endregion
+
+        #region Missing filaments
+
+        private static ExternalFilament GenerateUnknownFilament()
+        {
+            const string name = "Unknown";
+            const string material = "UNKNOWN";
+
+            var id = FilamentIdGenerator.GenerateId(DefaultBambuLabVendor, name, material, 1000, 1.75m);
+
+            return new ExternalFilament(
+                id,
+                DefaultBambuLabVendor,
+                name,
+                material,
+                1.22m,
+                1000,
+                1.75m
+            );
+        }
+
+        private Task ExtendWithMissingFilaments(List<ExternalFilament> bambuLabExternalFilaments)
+        {
+            var json = "[{\"name\":\"Translucent {color_name}\",\"material\":\"PLA\",\"density\":1.22,\"weights\":[{\"weight\":1000,\"spool_weight\":250}],\"diameters\":[1.75],\"extruder_temp\":220,\"bed_temp\":60,\"translucent\":true,\"colors\":[{\"name\":\"Teal\",\"hex\":\"009FA1\"},{\"name\":\"Light Jade\",\"hex\":\"96D8AF\"},{\"name\":\"Blue\",\"hex\":\"0047BB\"},{\"name\":\"Mellow Yellow\",\"hex\":\"F5DBAB\"},{\"name\":\"Purple\",\"hex\":\"8344B0\"},{\"name\":\"Cherry Pink\",\"hex\":\"F5B6CD\"},{\"name\":\"Orange\",\"hex\":\"F74E02\"},{\"name\":\"Ice Blue\",\"hex\":\"B8CDE9\"},{\"name\":\"Red\",\"hex\":\"B50011\"},{\"name\":\"Lavender\",\"hex\":\"B8ACD6\"}]}]";
+
+            var fillamentInfos = JsonConvert.DeserializeObject<FilamentData[]>(json);
+            if (fillamentInfos == null) return Task.CompletedTask;
+
+            foreach (var fillamentInfo in fillamentInfos)
+            {
+                foreach (var fillamentInfoWeight in fillamentInfo.Weights)
+                {
+                    foreach (var fillamentInfoDiameter in fillamentInfo.Diameters)
+                    {
+                        foreach (var color in fillamentInfo.Colors)
+                        {
+                            var name = fillamentInfo.Name.Replace("{color_name}", color.Name);
+                            var id = FilamentIdGenerator.GenerateId(DefaultBambuLabVendor, name, fillamentInfo.Material, fillamentInfoWeight.WeightValue, fillamentInfoDiameter, fillamentInfoWeight.SpoolType);
+
+                            if (bambuLabExternalFilaments.Any(x => x.Id == id)) continue;
+
+                            var filament = new ExternalFilament(
+                                id,
+                                DefaultBambuLabVendor,
+                                name,
+                                fillamentInfo.Material,
+                                fillamentInfo.Density,
+                                fillamentInfoWeight.SpoolWeight,
+                                fillamentInfoDiameter,
+                                spoolWeight: new Option<decimal?>(fillamentInfoWeight.SpoolWeight),
+                                spoolType: new Option<SpoolType?>(fillamentInfoWeight.SpoolType),
+                                colorHex: new Option<string?>(color.Hex),
+                                colorHexes: new Option<List<string>?>(), //not implemented jet
+                                extruderTemp: new Option<int?>(fillamentInfo.ExtruderTemp),
+                                bedTemp: new Option<int?>(fillamentInfo.BedTemp),
+                                finish: new Option<Finish?>(), //not implemented jet
+                                multiColorDirection: new Option<SpoolmanExternaldbMultiColorDirection?>(), //not implemented jet
+                                pattern: new Option<Pattern?>(), //not implemented jet
+                                translucent: new Option<bool?>(fillamentInfo.Translucent),
+                                glow: new Option<bool?>() //not implemented jet
+                            );
+
+                            bambuLabExternalFilaments.Add(filament);
+                        }
+                    }
+                }
             }
 
             return Task.CompletedTask;

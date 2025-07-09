@@ -5,19 +5,43 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:m="clr-namespace:UraniumUI.Icons.MaterialSymbols;assembly=UraniumUI.Icons.MaterialSymbols"
+    xmlns:fa="clr-namespace:UraniumUI.Icons.FontAwesome;assembly=UraniumUI.Icons.FontAwesome"
     xmlns:main="clr-namespace:BambuMan.UI.Main"
     xmlns:settings="clr-namespace:BambuMan.UI.Settings"
-    FlyoutBehavior="Disabled"
+    xmlns:logs="clr-namespace:BambuMan.UI.Logs"
+    FlyoutBehavior="Flyout"
     Title="BambuMan">
 
     <Shell.Behaviors>
         <toolkit:StatusBarBehavior StatusBarColor="#EADFDF" StatusBarStyle="DarkContent" />
     </Shell.Behaviors>
 
-    <!--<ShellContent Title="Main" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage" />
-    <ShellContent Title="Settings" ContentTemplate="{DataTemplate local:SettingsPage}" Route="SettingsPage" />-->
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Grid ColumnDefinitions="0.2*,0.8*">
+                <Image Source="{Binding FlyoutIcon}" Margin="5" HeightRequest="35" />
+                <Label Grid.Column="1" Text="{Binding Title}" VerticalTextAlignment="Center" />
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
 
-    <TabBar>
+    <ShellContent Title="Main" ContentTemplate="{DataTemplate main:MainPage}" Route="MainPage">
+        <ShellContent.Icon>
+            <FontImageSource FontFamily="MaterialSharp" Glyph="{x:Static m:MaterialSharp.House}" Color="Black" />
+        </ShellContent.Icon>
+    </ShellContent>
+    <ShellContent Title="Settings" ContentTemplate="{DataTemplate settings:SettingsPage}" Route="SettingsPage">
+        <ShellContent.Icon>
+            <FontImageSource FontFamily="MaterialSharp" Glyph="{x:Static m:MaterialSharp.Settings}" Color="Black" />
+        </ShellContent.Icon>
+    </ShellContent>
+    <ShellContent Title="Logs" ContentTemplate="{DataTemplate logs:LogsPage}" Route="LogsPage">
+        <ShellContent.Icon>
+            <FontImageSource FontFamily="MaterialSharp" Glyph="{x:Static m:MaterialSharp.Bug_report}" Color="Black" />
+        </ShellContent.Icon>
+    </ShellContent>
+
+    <!--<TabBar>
         <Tab Title="Main">
             <Tab.Icon>
                 <FontImageSource FontFamily="MaterialSharp" Glyph="{x:Static m:MaterialSharp.House}" />
@@ -30,5 +54,5 @@
             </Tab.Icon>
             <ShellContent Title="Settings" ContentTemplate="{DataTemplate settings:SettingsPage}" Route="SettingsPage" />
         </Tab>
-    </TabBar>
+    </TabBar>-->
 </Shell>

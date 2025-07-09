@@ -42,13 +42,13 @@
 	
 	<ItemGroup>
 		<PackageReference Include="BarcodeScanning.Native.Maui" Version="2.2.1" />
-		<PackageReference Include="CommunityToolkit.Maui" Version="12.0.0" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="12.1.0" />
 		<PackageReference Include="CommunityToolkit.Maui.Markup" Version="6.0.1" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.80" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.81" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="Sentry.Maui" Version="5.11.1" />
-		<PackageReference Include="Sentry.Serilog" Version="5.11.1" />
+		<PackageReference Include="Sentry.Maui" Version="5.11.2" />
+		<PackageReference Include="Sentry.Serilog" Version="5.11.2" />
 		<PackageReference Include="Serilog" Version="4.3.0" />
 		<PackageReference Include="Serilog.Enrichers.GlobalLogContext" Version="3.0.0" />
 		<PackageReference Include="Serilog.Extensions.Logging" Version="9.0.2" />
@@ -76,32 +76,27 @@
 	  <AndroidResource Remove="NewFolder1\**" />
 	  <AndroidResource Remove="Resources\drawable\**" />
 	  <AndroidResource Remove="Resources\NewFolder\**" />
-	  <AndroidResource Remove="UI\NewFolder\**" />
 	  <Compile Remove="NewFolder1\**" />
 	  <Compile Remove="Resources\drawable\**" />
 	  <Compile Remove="Resources\NewFolder\**" />
-	  <Compile Remove="UI\NewFolder\**" />
 	  <EmbeddedResource Remove="NewFolder1\**" />
 	  <EmbeddedResource Remove="Resources\drawable\**" />
 	  <EmbeddedResource Remove="Resources\NewFolder\**" />
-	  <EmbeddedResource Remove="UI\NewFolder\**" />
 	  <MauiCss Remove="NewFolder1\**" />
 	  <MauiCss Remove="Resources\drawable\**" />
 	  <MauiCss Remove="Resources\NewFolder\**" />
-	  <MauiCss Remove="UI\NewFolder\**" />
 	  <MauiXaml Remove="NewFolder1\**" />
 	  <MauiXaml Remove="Resources\drawable\**" />
 	  <MauiXaml Remove="Resources\NewFolder\**" />
-	  <MauiXaml Remove="UI\NewFolder\**" />
 	  <None Remove="NewFolder1\**" />
 	  <None Remove="Resources\drawable\**" />
 	  <None Remove="Resources\NewFolder\**" />
-	  <None Remove="UI\NewFolder\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.80" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.6" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.81" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.7" />
+		<PackageReference Include="UraniumUI.Icons.FontAwesome" Version="2.12.1" />
 		<PackageReference Include="UraniumUI.Icons.MaterialSymbols" Version="2.12.1" />
 		<PackageReference Include="UraniumUI.Material" Version="2.12.1" />
 	</ItemGroup>
@@ -118,7 +113,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="UI\Logs\LogsPage.xaml.cs">
+	    <DependentUpon>LogsPage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <MauiXaml Update="Resources\Styles\Override.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="UI\Logs\LogsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="UI\Settings\SettingsPage.xaml">

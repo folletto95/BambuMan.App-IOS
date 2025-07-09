@@ -8,8 +8,9 @@ using LogLevel = BambuMan.Shared.Enums.LogLevel;
 
 namespace BambuMan.UI.Main
 {
-    public partial class MainPageViewModel : ObservableObject, IQueryAttributable
+    public partial class MainPageViewModel(LogService logService) : ObservableObject, IQueryAttributable
     {
+
 #if DEBUG
         [ObservableProperty] private bool isTest = true;
 #else
@@ -20,7 +21,7 @@ namespace BambuMan.UI.Main
         [ObservableProperty] private ObservableCollection<InventoryModel> inventory = new();
 
         [ObservableProperty] private bool deviceIsListening;
-        [ObservableProperty] private ObservableCollection<LogModel> logs = new();
+        [ObservableProperty] private ObservableCollection<LogModel> logs = logService.Logs;
         [ObservableProperty] private bool nfcIsEnabled;
         [ObservableProperty] private bool eventsAlreadySubscribed;
         [ObservableProperty] private bool isDeviceOs;
@@ -38,13 +39,21 @@ namespace BambuMan.UI.Main
         [ObservableProperty] private bool settingsOk;
         [ObservableProperty] private bool spoolmanOk;
 
+        [ObservableProperty] private bool spoolmanConnecting = true;
+
         [ObservableProperty] private string nfcText = "NFC ENABLED";
 
         [ObservableProperty] private string? errorMessage;
         [ObservableProperty] private string? successMessage;
+        [ObservableProperty] private string? infoMessage;
 
         [ObservableProperty] private bool newVersionAvailable;
         [ObservableProperty] private string? newVersionText = "New version available";
+        
+        [ObservableProperty] private IEnumerable<string> existingLocations = [];
+
+        [ObservableProperty] private bool showLogsOnMainPage;
+        [ObservableProperty] private bool showKeyboardOnSpoolRead;
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
@@ -55,6 +64,7 @@ namespace BambuMan.UI.Main
         {
             ErrorMessage = null;
             SuccessMessage = null;
+            InfoMessage = null;
 
             return Task.CompletedTask;
         }
@@ -63,6 +73,7 @@ namespace BambuMan.UI.Main
         {
             ErrorMessage = message;
             SuccessMessage = null;
+            InfoMessage = null;
 
             return Task.CompletedTask;
         }
@@ -71,6 +82,15 @@ namespace BambuMan.UI.Main
         {
             ErrorMessage = null;
             SuccessMessage = message;
+            InfoMessage = null;
+
+            return Task.CompletedTask;
+        }
+        public Task ShowInfoMessage(string message)
+        {
+            ErrorMessage = null;
+            SuccessMessage = null;
+            InfoMessage = message;
 
             return Task.CompletedTask;
         }
@@ -106,13 +126,16 @@ namespace BambuMan.UI.Main
 
             SettingsOk = true;
 
-            if (!spoolmanManager.IsHealth)
+            if (!SpoolmanConnecting && !spoolmanManager.IsHealth)
             {
                 await ShowErrorMessage("Spoolman api is not healthy");
                 return;
             }
 
             if (spoolmanManager.Status >= SpoolmanManagerStatusType.Ready) SpoolmanOk = true;
+
+            if(!SpoolmanConnecting && !NfcIsEnabled)
+                await ShowErrorMessage("NFC is not enabled. Check if you're phone supports nfc.");
         }
 
         public void InventorySpool(Spool spool, BambuFillamentInfo info)

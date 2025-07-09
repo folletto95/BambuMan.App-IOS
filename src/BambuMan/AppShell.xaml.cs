@@ -1,5 +1,4 @@
-﻿using BambuMan.UI;
-using BambuMan.UI.Scan;
+﻿using BambuMan.UI.Scan;
 
 namespace BambuMan
 {
@@ -11,5 +10,13 @@ namespace BambuMan
 
             InitializeComponent();
         }
+        protected override bool OnBackButtonPressed()
+        {
+            if (Current.CurrentState.Location.OriginalString == "//MainPage") return false;
+            
+            Current.GoToAsync("//MainPage", true);
+            return true;
+        }
+
     }
 }
