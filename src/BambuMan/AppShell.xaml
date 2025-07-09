@@ -8,6 +8,7 @@
     xmlns:fa="clr-namespace:UraniumUI.Icons.FontAwesome;assembly=UraniumUI.Icons.FontAwesome"
     xmlns:main="clr-namespace:BambuMan.UI.Main"
     xmlns:settings="clr-namespace:BambuMan.UI.Settings"
+    xmlns:logs="clr-namespace:BambuMan.UI.Logs"
     FlyoutBehavior="Flyout"
     Title="BambuMan">
 
@@ -34,7 +35,7 @@
             <FontImageSource FontFamily="MaterialSharp" Glyph="{x:Static m:MaterialSharp.Settings}" Color="Black" />
         </ShellContent.Icon>
     </ShellContent>
-    <ShellContent Title="Logs" ContentTemplate="{DataTemplate settings:SettingsPage}" Route="SettingsPage">
+    <ShellContent Title="Logs" ContentTemplate="{DataTemplate logs:LogsPage}" Route="LogsPage">
         <ShellContent.Icon>
             <FontImageSource FontFamily="MaterialSharp" Glyph="{x:Static m:MaterialSharp.Bug_report}" Color="Black" />
         </ShellContent.Icon>

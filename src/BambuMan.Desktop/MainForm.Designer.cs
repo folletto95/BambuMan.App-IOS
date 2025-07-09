@@ -37,7 +37,9 @@
             showADBCommandsToolStripMenuItem = new ToolStripMenuItem();
             writeJsonFilesOnReadToolStripMenuItem = new ToolStripMenuItem();
             logSpoolmanApiToolStripMenuItem = new ToolStripMenuItem();
+            unknownFilamentEnabledToolStripMenuItem = new ToolStripMenuItem();
             clearLogsToolStripMenuItem = new ToolStripMenuItem();
+            testTagToolStripMenuItem = new ToolStripMenuItem();
             txtSpoolmanUrl = new TextBox();
             lblLogs = new Label();
             statusStrip1 = new StatusStrip();
@@ -70,7 +72,6 @@
             gbImportSettings = new GroupBox();
             lblSpoolmanUrl = new Label();
             btnSetUrl = new Button();
-            testTagToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nudPrice).BeginInit();
@@ -107,7 +108,7 @@
             // 
             // optionsToolStripMenuItem
             // 
-            optionsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { showNfcLogsToolStripMenuItem, showADBCommandsToolStripMenuItem, writeJsonFilesOnReadToolStripMenuItem, logSpoolmanApiToolStripMenuItem });
+            optionsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { showNfcLogsToolStripMenuItem, showADBCommandsToolStripMenuItem, writeJsonFilesOnReadToolStripMenuItem, logSpoolmanApiToolStripMenuItem, unknownFilamentEnabledToolStripMenuItem });
             optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             optionsToolStripMenuItem.Size = new Size(61, 20);
             optionsToolStripMenuItem.Text = "Options";
@@ -118,7 +119,7 @@
             showNfcLogsToolStripMenuItem.CheckOnClick = true;
             showNfcLogsToolStripMenuItem.CheckState = CheckState.Checked;
             showNfcLogsToolStripMenuItem.Name = "showNfcLogsToolStripMenuItem";
-            showNfcLogsToolStripMenuItem.Size = new Size(202, 22);
+            showNfcLogsToolStripMenuItem.Size = new Size(219, 22);
             showNfcLogsToolStripMenuItem.Text = "Show Nfc logs";
             showNfcLogsToolStripMenuItem.CheckStateChanged += showNfcLogsToolStripMenuItem_CheckStateChanged;
             // 
@@ -128,7 +129,7 @@
             showADBCommandsToolStripMenuItem.CheckOnClick = true;
             showADBCommandsToolStripMenuItem.CheckState = CheckState.Checked;
             showADBCommandsToolStripMenuItem.Name = "showADBCommandsToolStripMenuItem";
-            showADBCommandsToolStripMenuItem.Size = new Size(202, 22);
+            showADBCommandsToolStripMenuItem.Size = new Size(219, 22);
             showADBCommandsToolStripMenuItem.Text = "Show Apdu Commands";
             showADBCommandsToolStripMenuItem.CheckStateChanged += showADBCommandsToolStripMenuItem_CheckStateChanged;
             // 
@@ -138,7 +139,7 @@
             writeJsonFilesOnReadToolStripMenuItem.CheckOnClick = true;
             writeJsonFilesOnReadToolStripMenuItem.CheckState = CheckState.Checked;
             writeJsonFilesOnReadToolStripMenuItem.Name = "writeJsonFilesOnReadToolStripMenuItem";
-            writeJsonFilesOnReadToolStripMenuItem.Size = new Size(202, 22);
+            writeJsonFilesOnReadToolStripMenuItem.Size = new Size(219, 22);
             writeJsonFilesOnReadToolStripMenuItem.Text = "Write Json Files On Read";
             writeJsonFilesOnReadToolStripMenuItem.CheckStateChanged += writeJsonFilesOnReadToolStripMenuItem_CheckStateChanged;
             // 
@@ -148,9 +149,19 @@
             logSpoolmanApiToolStripMenuItem.CheckOnClick = true;
             logSpoolmanApiToolStripMenuItem.CheckState = CheckState.Checked;
             logSpoolmanApiToolStripMenuItem.Name = "logSpoolmanApiToolStripMenuItem";
-            logSpoolmanApiToolStripMenuItem.Size = new Size(202, 22);
+            logSpoolmanApiToolStripMenuItem.Size = new Size(219, 22);
             logSpoolmanApiToolStripMenuItem.Text = "Log Spoolman Api";
             logSpoolmanApiToolStripMenuItem.CheckStateChanged += logSpoolmanApiToolStripMenuItem_CheckStateChanged;
+            // 
+            // unknownFilamentEnabledToolStripMenuItem
+            // 
+            unknownFilamentEnabledToolStripMenuItem.Checked = true;
+            unknownFilamentEnabledToolStripMenuItem.CheckOnClick = true;
+            unknownFilamentEnabledToolStripMenuItem.CheckState = CheckState.Checked;
+            unknownFilamentEnabledToolStripMenuItem.Name = "unknownFilamentEnabledToolStripMenuItem";
+            unknownFilamentEnabledToolStripMenuItem.Size = new Size(219, 22);
+            unknownFilamentEnabledToolStripMenuItem.Text = "Unknown Filament Enabled";
+            unknownFilamentEnabledToolStripMenuItem.CheckStateChanged += unknownFilamentEnabledToolStripMenuItem_CheckStateChanged;
             // 
             // clearLogsToolStripMenuItem
             // 
@@ -158,6 +169,13 @@
             clearLogsToolStripMenuItem.Size = new Size(71, 20);
             clearLogsToolStripMenuItem.Text = "Clear logs";
             clearLogsToolStripMenuItem.Click += clearLogsToolStripMenuItem_Click;
+            // 
+            // testTagToolStripMenuItem
+            // 
+            testTagToolStripMenuItem.Name = "testTagToolStripMenuItem";
+            testTagToolStripMenuItem.Size = new Size(60, 20);
+            testTagToolStripMenuItem.Text = "Test tag";
+            testTagToolStripMenuItem.Click += testTagToolStripMenuItem_Click;
             // 
             // txtSpoolmanUrl
             // 
@@ -493,13 +511,6 @@
             btnSetUrl.UseVisualStyleBackColor = true;
             btnSetUrl.Click += btnSetUrl_Click;
             // 
-            // testTagToolStripMenuItem
-            // 
-            testTagToolStripMenuItem.Name = "testTagToolStripMenuItem";
-            testTagToolStripMenuItem.Size = new Size(60, 20);
-            testTagToolStripMenuItem.Text = "Test tag";
-            testTagToolStripMenuItem.Click += testTagToolStripMenuItem_Click;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -576,5 +587,6 @@
         private Label lblSppolBuydate;
         private DateTimePicker dtpSpoolBuyDate;
         private ToolStripMenuItem testTagToolStripMenuItem;
+        private ToolStripMenuItem unknownFilamentEnabledToolStripMenuItem;
     }
 }

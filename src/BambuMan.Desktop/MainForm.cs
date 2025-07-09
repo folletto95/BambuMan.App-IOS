@@ -17,6 +17,7 @@ public partial class MainForm : Form
     private const string RegKeyWriteJsonFiles = "WriteJsonFiles";
     private const string RegKeyLogSpoolmanApi = "LogSpoolmanApi";
     private const string RegKeySpoolmanUrl = "SpoolmanUrl";
+    private const string RegKeyUnknownFilamentEnabled = "UnknownFilamentEnabled";
 
     private const string RegKeyPrice = "Price";
     private const string RegKeyLocation = "Location";
@@ -38,6 +39,7 @@ public partial class MainForm : Form
         showNfcLogsToolStripMenuItem.Checked = GetRegistryValue(RegKeyShowLogsNfcLogs, false);
         writeJsonFilesOnReadToolStripMenuItem.Checked = GetRegistryValue(RegKeyWriteJsonFiles, false);
         logSpoolmanApiToolStripMenuItem.Checked = GetRegistryValue(RegKeyLogSpoolmanApi, false);
+        unknownFilamentEnabledToolStripMenuItem.Checked = GetRegistryValue(RegKeyUnknownFilamentEnabled, true);
         txtSpoolmanUrl.Text = GetRegistryValue(RegKeySpoolmanUrl, string.Empty);
         nudPrice.Value = GetRegistryValue(RegKeyPrice, 12.0m);
         txtLocation.Text = GetRegistryValue(RegKeyLocation, string.Empty);
@@ -58,6 +60,7 @@ public partial class MainForm : Form
         {
             ShowLogs = logSpoolmanApiToolStripMenuItem.Checked,
             ApiUrl = txtSpoolmanUrl.Text,
+            UnknownFilamentEnabled = unknownFilamentEnabledToolStripMenuItem.Checked
         };
 
         spoolmanManager.OnStatusChanged += SpoolmanManagerOnStatusChanged;
@@ -159,9 +162,8 @@ public partial class MainForm : Form
         tsslStatus.Text = (spoolmanManager?.Status ?? SpoolmanManagerStatusType.Initializing).GetDescriptionAttr();
     }
 
-
     #endregion
-    
+
     #region Registry read and write
 
     private TClass? GetRegistryValue<TClass>(string key, TClass? defaultValue)
@@ -219,6 +221,12 @@ public partial class MainForm : Form
     {
         var value = SetRegistryValue(RegKeyLogSpoolmanApi, logSpoolmanApiToolStripMenuItem.Checked);
         if (spoolmanManager != null) spoolmanManager.ShowLogs = value;
+    }
+    
+    private void unknownFilamentEnabledToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+    {
+        var value = SetRegistryValue(RegKeyUnknownFilamentEnabled, unknownFilamentEnabledToolStripMenuItem.Checked);
+        if (spoolmanManager != null) spoolmanManager.UnknownFilamentEnabled = value;
     }
 
     private void nudPrice_ValueChanged(object sender, EventArgs e)
@@ -329,13 +337,17 @@ public partial class MainForm : Form
         //var json = "{\"SerialNumber\":\"B71F10BA\",\"TagManufacturerData\":\"AggEAAPyh3mG90eQ\",\"MaterialVariantIdentifier\":\"N04-K0\",\"UniqueMaterialIdentifier\":\"FN04\",\"FilamentType\":\"PA-CF\",\"DetailedFilamentType\":\"PAHT-CF\",\"Color\":\"000000FF\",\"SpoolWeight\":500,\"FilamentDiameter\":1.75,\"DryingTemperature\":80,\"DryingTime\":12,\"BedTemperatureType\":2,\"BedTemperature\":100,\"MaxTemperatureForHotend\":280,\"MinTemperatureForHotend\":270,\"XCamInfo\":\"NCHsLOgD6AMzMzM/\",\"NozzleDiameter\":0.2,\"TrayUid\":\"15D84264B4EA49B2BEE0C4405C732B8B\",\"SpoolWidth\":666,\"ProductionDateTime\":\"2022-12-01T02:34:00\",\"ProductionDateTimeShort\":\"A221201\",\"FilamentLength\":196,\"FormatIdentifier\":0,\"ColorCount\":0,\"SecondColor\":\"00000000\",\"SkuStart\":\"N04-K0-1.75-500\"}";
         //var json = "{\"SerialNumber\":\"DAC888FB\",\"TagManufacturerData\":\"YQgEAASo9nmRwduQ\",\"MaterialVariantIdentifier\":\"G01-C0\",\"UniqueMaterialIdentifier\":\"FG01\",\"FilamentType\":\"PETG\",\"DetailedFilamentType\":\"PETG Translucent\",\"Color\":\"00000000\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":65,\"DryingTime\":8,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":260,\"MinTemperatureForHotend\":230,\"XCamInfo\":\"pDiAPrwCIAMAAIA/\",\"NozzleDiameter\":0.2,\"TrayUid\":\"697C12C070E044FAA79740483B46139A\",\"SpoolWidth\":2875,\"ProductionDateTime\":\"2024-08-17T16:11:00\",\"ProductionDateTimeShort\":\"20240817\",\"FilamentLength\":330,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"G01-C0-1.75-1000\"}";
         //var json = "{\"SerialNumber\":\"3526771C\",\"TagManufacturerData\":\"eAgEAAPFE3AN9t2Q\",\"MaterialVariantIdentifier\":\"S00-W0\",\"UniqueMaterialIdentifier\":\"FS00\",\"FilamentType\":\"Support\",\"DetailedFilamentType\":\"Support W\",\"Color\":\"FFFFFFFF\",\"SpoolWeight\":250,\"FilamentDiameter\":1.75,\"DryingTemperature\":55,\"DryingTime\":8,\"BedTemperatureType\":1,\"BedTemperature\":40,\"MaxTemperatureForHotend\":220,\"MinTemperatureForHotend\":220,\"XCamInfo\":\"NCHQB+gD6AOamRk/\",\"NozzleDiameter\":0.2,\"TrayUid\":\"1EACC234E93F49268139474ACBA4E144\",\"SpoolWidth\":1149,\"ProductionDateTime\":\"2022-07-11T22:50:00\",\"ProductionDateTimeShort\":\"2207090310\",\"FilamentLength\":80,\"FormatIdentifier\":0,\"ColorCount\":0,\"SecondColor\":\"00000000\",\"SkuStart\":\"S00-W0-1.75-250\"}";
-        var json = "{\"SerialNumber\":\"40AD215F\",\"TagManufacturerData\":\"kwgEAAPrlfTEai6Q\",\"MaterialVariantIdentifier\":\"A50-B9\",\"UniqueMaterialIdentifier\":\"FA50\",\"FilamentType\":\"PLA-CF\",\"DetailedFilamentType\":\"PLA-CF\",\"Color\":\"6E88BCFF\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":55,\"DryingTime\":8,\"BedTemperatureType\":1,\"BedTemperature\":45,\"MaxTemperatureForHotend\":240,\"MinTemperatureForHotend\":200,\"XCamInfo\":\"0AfQB4QD6ANmZmY/\",\"NozzleDiameter\":0.2,\"TrayUid\":\"2651585B582F4AF09061714A5AC2E342\",\"SpoolWidth\":666,\"ProductionDateTime\":\"2023-06-12T16:23:00\",\"ProductionDateTimeShort\":\"202306012\",\"FilamentLength\":350,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"A50-B9-1.75-1000\"}";
+        //var json = "{\"SerialNumber\":\"40AD215F\",\"TagManufacturerData\":\"kwgEAAPrlfTEai6Q\",\"MaterialVariantIdentifier\":\"A50-B9\",\"UniqueMaterialIdentifier\":\"FA50\",\"FilamentType\":\"PLA-CF\",\"DetailedFilamentType\":\"PLA-CF\",\"Color\":\"6E88BCFF\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":55,\"DryingTime\":8,\"BedTemperatureType\":1,\"BedTemperature\":45,\"MaxTemperatureForHotend\":240,\"MinTemperatureForHotend\":200,\"XCamInfo\":\"0AfQB4QD6ANmZmY/\",\"NozzleDiameter\":0.2,\"TrayUid\":\"2651585B582F4AF09061714A5AC2E342\",\"SpoolWidth\":666,\"ProductionDateTime\":\"2023-06-12T16:23:00\",\"ProductionDateTimeShort\":\"202306012\",\"FilamentLength\":350,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"A50-B9-1.75-1000\"}";
+
+        //var json = "{\"SerialNumber\":\"7AEDA1FD\",\"TagManufacturerData\":\"ywgEAAThczaFQziQ\",\"MaterialVariantIdentifier\":\"C01-W0\",\"UniqueMaterialIdentifier\":\"FC01\",\"FilamentType\":\"PC\",\"DetailedFilamentType\":\"PC FR\",\"Color\":\"FFFFFFFF\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":80,\"DryingTime\":8,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":280,\"MinTemperatureForHotend\":260,\"XCamInfo\":\"AAAAAAAAAAAAAAAA\",\"NozzleDiameter\":0.2,\"TrayUid\":\"F6D149EC530E4E82B4EFFD6C45EDC4A0\",\"SpoolWidth\":6625,\"ProductionDateTime\":\"2024-12-12T12:26:00\",\"ProductionDateTimeShort\":\"24_12_12_12\",\"FilamentLength\":350,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"C01-W0-1.75-1000\"}\r\n";
+        var json = "{\"SerialNumber\":\"83EC9A1C\",\"TagManufacturerData\":\"6QgEAAR8EZ2x4zmQ\",\"MaterialVariantIdentifier\":\"A17-R1\",\"UniqueMaterialIdentifier\":\"FA17\",\"FilamentType\":\"PLA\",\"DetailedFilamentType\":\"PLA Translucent\",\"Color\":\"F5B6CD80\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":55,\"DryingTime\":8,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":240,\"MinTemperatureForHotend\":200,\"XCamInfo\":\"AAAAAAAAAAAAAAAA\",\"NozzleDiameter\":0.2,\"TrayUid\":\"2DC9E553D1924FA89FBB893C9E921DBA\",\"SpoolWidth\":666,\"ProductionDateTime\":\"2024-12-20T09:40:00\",\"ProductionDateTimeShort\":\"20241220\",\"FilamentLength\":345,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"A17-R1-1.75-1000\"}";
 
         var bambuFillamentInfo = JsonConvert.DeserializeObject<BambuFillamentInfo>(json);
 
         json = JsonConvert.SerializeObject(bambuFillamentInfo, Formatting.Indented);
         AppendText(LogLevel.Information, json);
 
-        if(spoolmanManager != null) await spoolmanManager.InventorySpool(bambuFillamentInfo!, DateTime.Today, 12, string.Empty, string.Empty);
+        if (spoolmanManager != null) await spoolmanManager.InventorySpool(bambuFillamentInfo!, DateTime.Today, 12, string.Empty, string.Empty);
     }
+
 }

@@ -28,6 +28,11 @@
                     </ImageButton.Source>
                 </ImageButton>
             </Grid>
+            <material:CheckBox x:Name="TfUnknownFilamentEnabled" Text="Import unknown filament" IsChecked="{Binding UnknownFilamentEnabled, Mode=TwoWay}" Margin="10,5,10,0"></material:CheckBox>
+
+            <material:CheckBox x:Name="TfShowLogsOnMainPage" Text="Show logs on main page" IsChecked="{Binding ShowLogsOnMainPage, Mode=TwoWay}" Margin="10,0,10,0"></material:CheckBox>
+
+            <material:CheckBox x:Name="TfShowKeyboardOnSpoolRead" Text="Show keyboard on spool read" IsChecked="{Binding ShowKeyboardOnSpoolRead, Mode=TwoWay}" Margin="10,0,10,5"></material:CheckBox>
 
             <material:DatePickerField x:Name="TfBuyDate" Title="Buy date:" Date="{Binding BuyDate,Mode=TwoWay}" Format="yyyy-MM-dd" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Calendar_month}}">
 
@@ -40,7 +45,9 @@
 
             <material:TextField x:Name="TfLotNr" Title="Lot nr:" Text="{Binding DefaultLotNr,Mode=TwoWay}" AllowClear="True" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Tag}}" />
 
-            <material:TextField x:Name="TfLocation" Title="Location:" Text="{Binding DefaultLocation,Mode=TwoWay}" AllowClear="True" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Map}}" />
+            <!--<material:TextField x:Name="TfLocation" Title="Location:" Text="{Binding DefaultLocation,Mode=TwoWay}" AllowClear="True" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Map}}" />-->
+
+            <material:AutoCompleteTextField x:Name="TfLocation" Title="Location:" Threshold="1" Text="{Binding DefaultLocation,Mode=TwoWay}" AllowClear="True" ItemsSource="{Binding ExistingLocations}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Map}}" />
 
             <!--<Button StyleClass="FilledButton" Text="Save changes" input:FormView.IsSubmitButton="True"/>-->
 

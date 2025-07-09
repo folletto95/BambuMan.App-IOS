@@ -98,46 +98,17 @@
                 </Border>
             </VerticalStackLayout>
 
-            <Border Stroke="#7E570E" StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5" Background="#F2E9DA" Margin="0,0,0,5" Padding="5" IsVisible="{Binding ShowSpoolEdit}">
-                <VerticalStackLayout>
-                    <Label Text="Spool info:" FontAttributes="Bold"></Label>
-
-                    <input:FormView x:Name="FormView" Padding="0" Margin="0">
-                        <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*,*" ColumnSpacing="5" RowSpacing="5" Margin="5,5,0,0" Padding="0">
-
-                            <material:TextField x:Name="TfSpoolWeight" Grid.Column="0" Grid.Row="0" TextColor="Black" Title="Weight (g):" Keyboard="Numeric" Text="{Binding SpoolWeight,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Weight}}">
-                                <validation:NumericValidation />
-                                <validation:MinValueValidation MinValue="0" />
-                            </material:TextField>
-
-                            <material:TextField x:Name="TfSpoolEmptyWeight" Grid.Column="1" Grid.Row="0" TextColor="Black" Title="Empty weight (g):" Keyboard="Numeric" Text="{Binding SpoolEmptyWeight,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Settings_backup_restore}}">
-                                <validation:NumericValidation />
-                                <validation:MinValueValidation MinValue="0" />
-                            </material:TextField>
-
-                            <material:TextField x:Name="TfSpoolPrice" Grid.Column="0" Grid.Row="1" TextColor="Black" Title="Price:" Keyboard="Numeric" AllowClear="True" Text="{Binding SpoolPrice,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Sell}}">
-                                <validation1:NumericNullableValidation  />
-                                <validation:MinValueValidation MinValue="0" />
-                            </material:TextField>
-
-                            <material:DatePickerField x:Name="TfSpoolBuyDate" Grid.Column="1" Grid.Row="1" TextColor="Black" Title="Buy date:" Date="{Binding SpoolBuyDate,Mode=TwoWay}" Format="yyyy-MM-dd" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Calendar_month}}" />
-
-                            <material:TextField x:Name="TfSpoolLotNr" Grid.Column="0" Grid.Row="2" TextColor="Black" Title="Lot nr:" AllowClear="True" Text="{Binding SpoolLotNr,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Tag}}" />
-
-                            <material:TextField x:Name="TfSpoolLocation" Grid.Column="1" Grid.Row="2" TextColor="Black" Title="Location:" AllowClear="True" Text="{Binding SpoolLocation,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Map}}" />
-
-                            <Button Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" BackgroundColor="LightGray" TextColor="Black" Text="Cancel" Clicked="CloseButton_OnClicked"/>
-
-                            <Button Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1" StyleClass="FilledButton" Text="Save changes" Clicked="SaveChanges_OnClicked"/>
-
-
-                        </Grid>
-                    </input:FormView>
-                </VerticalStackLayout>
-            </Border>
-
-            <VerticalStackLayout Margin="0,0,0,5" IsVisible="{Binding IsTest}">
-                <Button Clicked="Button_OnClicked" Text="Test Tag" />
+            <VerticalStackLayout x:Name="InfoMessages" Margin="0,0,0,5" IsVisible="{Binding InfoMessage, Converter={StaticResource NoNullToBoolConverter}}">
+                <Border StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5" Stroke="LightBlue" BackgroundColor="#F4FCFF" >
+                    <Label Margin="0" Padding="8,4,8,4" TextColor="#2493B5" FontSize="14">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span FontAttributes="Bold" Text="Info: "></Span>
+                                <Span Text="{Binding InfoMessage}"></Span>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </Border>
             </VerticalStackLayout>
 
             <StackLayout IsVisible="{Binding HasInventoryItems}">
@@ -168,9 +139,60 @@
                 </StackLayout>
             </StackLayout>
 
-            <Border HeightRequest="2" BackgroundColor="Gray" Margin="0,5,0,5"></Border>
+            <Border HeightRequest="2" BackgroundColor="Gray" Margin="0,5,0,5" IsVisible="{Binding HasInventoryItems}"></Border>
 
-            <StackLayout>
+            <VerticalStackLayout HorizontalOptions="Center" Margin="0,20,0,20" IsVisible="{Binding SpoolmanConnecting}">
+                <ActivityIndicator IsRunning="true" Color="#7E570E" HeightRequest="110" />
+                <Label Text="Connecting to Spoolman, please wait ..." Margin="0,10,0,0" FontAttributes="Bold"></Label>
+            </VerticalStackLayout>
+
+            <Border Stroke="#7E570E" StrokeThickness="1" StrokeShape="RoundRectangle 5,5,5,5" Background="#F2E9DA" Margin="0,0,0,5" Padding="5" IsVisible="{Binding ShowSpoolEdit}">
+                <VerticalStackLayout>
+                    <Label Text="Spool info:" FontAttributes="Bold"></Label>
+
+                    <input:FormView x:Name="FormView" Padding="0" Margin="0">
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="*,*,*,*" ColumnSpacing="5" RowSpacing="5" Margin="5,5,0,0" Padding="0">
+
+                            <material:TextField x:Name="TfSpoolWeight" Grid.Column="0" Grid.Row="0" TextColor="Black" Title="Weight (g):" Keyboard="Numeric" Text="{Binding SpoolWeight,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Weight}}">
+                                <validation:NumericValidation />
+                                <validation:MinValueValidation MinValue="0" />
+                            </material:TextField>
+
+                            <material:TextField x:Name="TfSpoolEmptyWeight" Grid.Column="1" Grid.Row="0" TextColor="Black" Title="Empty weight (g):" Keyboard="Numeric" Text="{Binding SpoolEmptyWeight,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Settings_backup_restore}}">
+                                <validation:NumericValidation />
+                                <validation:MinValueValidation MinValue="0" />
+                            </material:TextField>
+
+                            <material:TextField x:Name="TfSpoolPrice" Grid.Column="0" Grid.Row="1" TextColor="Black" Title="Price:" Keyboard="Numeric" AllowClear="True" Text="{Binding SpoolPrice,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Sell}}">
+                                <validation1:NumericNullableValidation  />
+                                <validation:MinValueValidation MinValue="0" />
+                            </material:TextField>
+
+                            <material:DatePickerField x:Name="TfSpoolBuyDate" Grid.Column="1" Grid.Row="1" TextColor="Black" Title="Buy date:" Date="{Binding SpoolBuyDate,Mode=TwoWay}" Format="yyyy-MM-dd" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Calendar_month}}" />
+
+                            <material:TextField x:Name="TfSpoolLotNr" Grid.Column="0" Grid.Row="2" TextColor="Black" Title="Lot nr:" AllowClear="True" Text="{Binding SpoolLotNr,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Tag}}" />
+
+                            <material:AutoCompleteTextField x:Name="TfSpoolLocation" Grid.Column="1" Grid.Row="2" TextColor="Black" Title="Location:" Threshold="1" Text="{Binding SpoolLocation,Mode=TwoWay}" AllowClear="True" ItemsSource="{Binding ExistingLocations}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Map}}" />
+
+                            <!--<material:TextField x:Name="TfSpoolLocation" Grid.Column="1" Grid.Row="2" TextColor="Black" Title="Location:" AllowClear="True" Text="{Binding SpoolLocation,Mode=TwoWay}" Icon="{FontImageSource FontFamily=MaterialSharp, Glyph={x:Static m:MaterialSharp.Map}}" />-->
+
+                            <Button Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1" BackgroundColor="LightGray" TextColor="Black" Text="Cancel" Clicked="CloseButton_OnClicked"/>
+
+                            <Button Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1" StyleClass="FilledButton" Text="Save changes" Clicked="SaveChanges_OnClicked"/>
+
+
+                        </Grid>
+                    </input:FormView>
+                </VerticalStackLayout>
+            </Border>
+
+            <VerticalStackLayout Margin="0,0,0,5" IsVisible="{Binding IsTest}">
+                <Button Clicked="Button_OnClicked" Text="Test Tag" />
+            </VerticalStackLayout>
+
+            <Border HeightRequest="2" BackgroundColor="Gray" Margin="0,5,0,5" IsVisible="{Binding ShowLogsOnMainPage}"></Border>
+
+            <StackLayout IsVisible="{Binding ShowLogsOnMainPage}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"></ColumnDefinition>

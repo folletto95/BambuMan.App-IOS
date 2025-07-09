@@ -1,4 +1,5 @@
 ﻿using BambuMan.Shared;
+using BambuMan.UI.Logs;
 using BambuMan.UI.Main;
 using BambuMan.UI.Scan;
 using BambuMan.UI.Settings;
@@ -90,7 +91,9 @@ namespace BambuMan
             services.AddSingleton<MainPageViewModel>();
             services.AddTransient<SettingsPage>();
             services.AddTransient<SettingsPageViewModel>();
+            services.AddTransient<LogsPageViewModel>();
             services.AddTransient<ScanPage>();
+            services.AddSingleton<LogService>();
         }
 
         private static void AddServices(IServiceCollection services)
