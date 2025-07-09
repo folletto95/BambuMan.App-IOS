@@ -172,6 +172,8 @@ namespace BambuMan.UI.Main
                 {
                     viewModel.NfcIsEnabled = CrossNfc.Current.IsEnabled;
                     viewModel.NfcText = CrossNfc.Current.IsEnabled ? "NFC ENABLED" : "NFC DISABLED";
+                    
+                    await viewModel.Validate(spoolmanManager);
 
                     if (DeviceInfo.Platform == DevicePlatform.iOS) viewModel.IsDeviceOs = true;
 
@@ -327,10 +329,19 @@ namespace BambuMan.UI.Main
         /// Event raised when NFC Status has changed
         /// </summary>
         /// <param name="isEnabled">NFC status</param>
-        private void Current_OnNfcStatusChanged(bool isEnabled)
+        private async void Current_OnNfcStatusChanged(bool isEnabled)
         {
-            viewModel.NfcIsEnabled = isEnabled;
-            viewModel.NfcText = isEnabled ? "NFC ENABLED" : "NFC DISABLED";
+            try
+            {
+                viewModel.NfcIsEnabled = isEnabled;
+                viewModel.NfcText = isEnabled ? "NFC ENABLED" : "NFC DISABLED";
+
+                await viewModel.Validate(spoolmanManager);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error on Current_OnNfcStatusChanged");
+            }
         }
 
         /// <summary>
