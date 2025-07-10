@@ -130,6 +130,12 @@ namespace BambuMan.Shared
             }
         }
 
+        public SpoolmanManager Test()
+        {
+            ExtendWithMissingFilaments(BambuLabExternalFilaments).Wait();
+            return this;
+        }
+
         private async Task<bool> CheckHealth()
         {
             if (apiHost == null) return false;
@@ -357,7 +363,7 @@ namespace BambuMan.Shared
             }
         }
 
-        private async Task<ExternalFilament?> FindExternalFilament(BambuFillamentInfo info)
+        public async Task<ExternalFilament?> FindExternalFilament(BambuFillamentInfo info)
         {
             var hexColor = info.Color?.Substring(0, 6) ?? string.Empty;
             var opacity = info.Color?.Substring(6).StringToByteArray().FirstOrDefault() ?? 255;
@@ -372,17 +378,31 @@ namespace BambuMan.Shared
             var material = BambuLabExternalFilaments.Where(x => x.Material == info.FilamentType).ToArray();
 #endif
 
-            var query = BambuLabExternalFilaments
-                .Where(x => x.Material == info.FilamentType ||
-                            info.DetailedFilamentType == "PA-CF" && x.Material == "PA6-CF" ||
-                            info.DetailedFilamentType == "PAHT-CF" && x.Material == "PAHT-CF" ||
-                            info.DetailedFilamentType == "PLA Wood" && x.Material == "PLA+WOOD" ||
-                            info.DetailedFilamentType == "TPU for AMS" && x.Material == "TPU" && x.Name.StartsWith("For AMS"))
-                .Where(x => (x.ColorHex?.Equals(color, StringComparison.CurrentCultureIgnoreCase) ?? false) ||
-                            (info.FilamentType == "ASA" && color == "FFFFFF" && (x.ColorHex?.Equals("FFFAF2", StringComparison.CurrentCultureIgnoreCase) ?? false)) || //ASA filament hex color is different on spoolman db vs tag
-                            (info.DetailedFilamentType == "PETG HF" && color == "BC0900" && (x.ColorHex?.Equals("EB3A3A", StringComparison.CurrentCultureIgnoreCase) ?? false)) ||  //PETG HF red filament hex color is different on spoolman db vs tag
-                            (info.DetailedFilamentType == "PETG Translucent" && color == "000000" && (x.ColorHex?.Equals("FFFFFF", StringComparison.CurrentCultureIgnoreCase) ?? false)))  //PETG Translucent clear filament hex color is different on spoolman db vs tag
-                .Where(x => x.Translucent == transparent || x.Translucent == null && !transparent);
+            var query = BambuLabExternalFilaments.AsQueryable();
+
+            query = query.Where(x => x.Material == info.FilamentType ||
+                                     info.DetailedFilamentType == "PA6-GF" && x.Material == "PA6-GF" ||
+                                     info.DetailedFilamentType == "ASA Aero" && x.Material == "ASA" && x.Name.Contains("Aero", StringComparison.CurrentCultureIgnoreCase) ||
+                                     info.DetailedFilamentType == "PLA Aero" && x.Material == "PLA" && x.Name.Contains("Aero", StringComparison.CurrentCultureIgnoreCase) ||
+                                     info.DetailedFilamentType == "PA-CF" && x.Material == "PA6-CF" ||
+                                     info.DetailedFilamentType == "PAHT-CF" && x.Material == "PAHT-CF" ||
+                                     info.DetailedFilamentType == "PLA Wood" && x.Material == "PLA+WOOD" ||
+                                     info.DetailedFilamentType == "TPU for AMS" && x.Material == "TPU" && x.Name.StartsWith("For AMS"));
+
+            var t1 = query.ToArray();
+
+            query = query.Where(x => (x.ColorHex != null && x.ColorHex.Equals(color, StringComparison.CurrentCultureIgnoreCase)) ||
+                                     (x.ColorHexes != null && x.ColorHexes.Contains(color, StringComparer.CurrentCultureIgnoreCase)) ||
+                                     (info.FilamentType == "ASA" && color == "FFFFFF" && x.ColorHex != null && x.ColorHex.Equals("FFFAF2", StringComparison.CurrentCultureIgnoreCase)) || //ASA filament hex color is different on spoolman db vs tag
+                                     (info.FilamentType == "ASA Aero" && color == "E9E4D9" && x.ColorHex != null && x.ColorHex.Equals("F5F1DD", StringComparison.CurrentCultureIgnoreCase)) || //ASA filament hex color is different on spoolman db vs tag
+                                     (info.DetailedFilamentType == "PETG HF" && color == "BC0900" && x.ColorHex != null && x.ColorHex.Equals("EB3A3A", StringComparison.CurrentCultureIgnoreCase)) || //PETG HF red filament hex color is different on spoolman db vs tag
+                                     (info.DetailedFilamentType == "PETG Translucent" && color == "000000" && x.ColorHex != null && x.ColorHex.Equals("FFFFFF", StringComparison.CurrentCultureIgnoreCase)));  //PETG Translucent clear filament hex color is different on spoolman db vs tag
+
+            var t2 = query.ToArray();
+
+            query = query.Where(x => x.Translucent == transparent || x.Translucent == null && !transparent);
+
+            var t3 = query.ToArray();
 
             if (info.DetailedFilamentType?.Contains("Support", StringComparison.CurrentCultureIgnoreCase) ?? false)
             {
@@ -404,23 +424,33 @@ namespace BambuMan.Shared
 
                 query = BambuLabExternalFilaments
                     .Where(x => x.Name.StartsWith(nameToSearch, StringComparison.CurrentCultureIgnoreCase))
-                    .Where(x => x.ColorHex?.Equals(hexColor, StringComparison.CurrentCultureIgnoreCase) ?? false);
+                    .Where(x => x.ColorHex?.Equals(hexColor, StringComparison.CurrentCultureIgnoreCase) ?? false).AsQueryable();
             }
             //multi color spool
-            else if (info.ColorCount.GetValueOrDefault() > 1)
+            else if (info.ColorCount.GetValueOrDefault() > 1 && query.Count() != 1)
             {
                 var hexSecondColor = info.SecondColor?.Substring(0, 6) ?? string.Empty;
                 var colors = new[] { color, hexSecondColor };
 
+                if (info.MaterialVariantIdentifier?.Equals("A05-T1", StringComparison.CurrentCultureIgnoreCase) ?? false) colors = ["FF9425", "FCA2BF"];
+                if (info.MaterialVariantIdentifier?.Equals("A05-T2", StringComparison.CurrentCultureIgnoreCase) ?? false) colors = ["0047BB", "7D1B49"];
+                if (info.MaterialVariantIdentifier?.Equals("A05-T3", StringComparison.CurrentCultureIgnoreCase) ?? false) colors = ["0047BB", "BB22A3"];
+                if (info.MaterialVariantIdentifier?.Equals("A05-T4", StringComparison.CurrentCultureIgnoreCase) ?? false) colors = ["60A4E8", "4CE4A0"];
+                if (info.MaterialVariantIdentifier?.Equals("A05-T5", StringComparison.CurrentCultureIgnoreCase) ?? false) colors = ["000000", "A34342"];
+
                 query = BambuLabExternalFilaments
                     .Where(x => x.Material == info.FilamentType)
-                    .Where(x => x.ColorHexes != null && colors.All(c => x.ColorHexes.Contains(c)));
+                    .Where(x => x.ColorHexes != null && colors.All(c => x.ColorHexes.Contains(c))).AsQueryable();
+
+                var t5 = query.ToList();
             }
             else query = query.Where(x => !x.Name.Contains("Support", StringComparison.CurrentCultureIgnoreCase));
 
             if (info.DetailedFilamentType?.Contains("Basic", StringComparison.CurrentCultureIgnoreCase) ?? false) query = query.Where(x => x.Finish == null && x.Pattern == null);
             else if (info.DetailedFilamentType?.Contains("Matte", StringComparison.CurrentCultureIgnoreCase) ?? false) query = query.Where(x => x.Finish == Finish.Matte);
             else if (info.DetailedFilamentType?.Contains("Glow", StringComparison.CurrentCultureIgnoreCase) ?? false) query = query.Where(x => x.Glow == true);
+            else if (info.DetailedFilamentType?.Contains("Silk+", StringComparison.CurrentCultureIgnoreCase) ?? false) query = query.Where(x => x.Name.Contains("Silk+", StringComparison.CurrentCultureIgnoreCase));
+            else if (info.DetailedFilamentType?.Contains("Aero", StringComparison.CurrentCultureIgnoreCase) ?? false) query = query.Where(x => x.Name.Contains("Aero", StringComparison.CurrentCultureIgnoreCase));
             else if (info.DetailedFilamentType?.Contains("Silk", StringComparison.CurrentCultureIgnoreCase) ??
                      info.DetailedFilamentType?.Contains("Metallic", StringComparison.CurrentCultureIgnoreCase) ??
                      info.DetailedFilamentType?.Contains("Galaxy", StringComparison.CurrentCultureIgnoreCase) ??
@@ -431,6 +461,20 @@ namespace BambuMan.Shared
 
             if (info.DetailedFilamentType?.Equals("PC FR", StringComparison.CurrentCultureIgnoreCase) ?? false)
                 query = query.Where(x => x.Name.StartsWith("FR "));
+
+            if (info.DetailedFilamentType?.Equals("PC", StringComparison.CurrentCultureIgnoreCase) ?? false)
+            {
+                query = query.Where(x => !x.Name.StartsWith("FR "));
+
+                if (color == "FFFFFF" && (info.UniqueMaterialIdentifier?.Equals("FC00", StringComparison.CurrentCultureIgnoreCase) ?? false))
+                    query = query.Where(x => x.Name.Equals("White", StringComparison.CurrentCultureIgnoreCase));
+
+                if (color == "FFFFFF" && !(info.UniqueMaterialIdentifier?.Equals("FC00", StringComparison.CurrentCultureIgnoreCase) ?? false))
+                    query = query.Where(x => x.Name.Equals("Transparent", StringComparison.CurrentCultureIgnoreCase));
+            }
+
+            if (info.MaterialVariantIdentifier?.Equals("A00-W1", StringComparison.CurrentCultureIgnoreCase) ?? false)
+                query = query.Where(x => x.Name.Equals("Jade White", StringComparison.CurrentCultureIgnoreCase));
 
             var result = query.ToList();
 
@@ -690,49 +734,35 @@ namespace BambuMan.Shared
 
         private Task ExtendWithMissingFilaments(List<ExternalFilament> bambuLabExternalFilaments)
         {
-            var json = "[{\"name\":\"Translucent {color_name}\",\"material\":\"PLA\",\"density\":1.22,\"weights\":[{\"weight\":1000,\"spool_weight\":250}],\"diameters\":[1.75],\"extruder_temp\":220,\"bed_temp\":60,\"translucent\":true,\"colors\":[{\"name\":\"Teal\",\"hex\":\"009FA1\"},{\"name\":\"Light Jade\",\"hex\":\"96D8AF\"},{\"name\":\"Blue\",\"hex\":\"0047BB\"},{\"name\":\"Mellow Yellow\",\"hex\":\"F5DBAB\"},{\"name\":\"Purple\",\"hex\":\"8344B0\"},{\"name\":\"Cherry Pink\",\"hex\":\"F5B6CD\"},{\"name\":\"Orange\",\"hex\":\"F74E02\"},{\"name\":\"Ice Blue\",\"hex\":\"B8CDE9\"},{\"name\":\"Red\",\"hex\":\"B50011\"},{\"name\":\"Lavender\",\"hex\":\"B8ACD6\"}]}]";
-
-            var fillamentInfos = JsonConvert.DeserializeObject<FilamentData[]>(json);
+            var fillamentInfos = JsonConvert.DeserializeObject<FilamentData[]>(Constants.BambuLabExternalFilaments);
             if (fillamentInfos == null) return Task.CompletedTask;
 
             foreach (var fillamentInfo in fillamentInfos)
             {
-                foreach (var fillamentInfoWeight in fillamentInfo.Weights)
-                {
-                    foreach (var fillamentInfoDiameter in fillamentInfo.Diameters)
-                    {
-                        foreach (var color in fillamentInfo.Colors)
-                        {
-                            var name = fillamentInfo.Name.Replace("{color_name}", color.Name);
-                            var id = FilamentIdGenerator.GenerateId(DefaultBambuLabVendor, name, fillamentInfo.Material, fillamentInfoWeight.WeightValue, fillamentInfoDiameter, fillamentInfoWeight.SpoolType);
+                if (bambuLabExternalFilaments.Any(x => x.Id == fillamentInfo.Id)) continue;
 
-                            if (bambuLabExternalFilaments.Any(x => x.Id == id)) continue;
+                var filament = new ExternalFilament(
+                    fillamentInfo.Id,
+                    fillamentInfo.Manufacturer,
+                    fillamentInfo.Name,
+                    fillamentInfo.Material,
+                    fillamentInfo.Density,
+                    fillamentInfo.SpoolWeight,
+                    fillamentInfo.Diameter,
+                    spoolWeight: new Option<decimal?>(fillamentInfo.SpoolWeight),
+                    spoolType: new Option<SpoolType?>(SpoolTypeValueConverter.FromStringOrDefault(fillamentInfo.SpoolType ?? "")),
+                    colorHex: new Option<string?>(fillamentInfo.ColorHex),
+                    colorHexes: new Option<List<string>?>(fillamentInfo.ColorHexes?.ToList()), //not implemented jet
+                    extruderTemp: new Option<int?>(fillamentInfo.ExtruderTemp),
+                    bedTemp: new Option<int?>(fillamentInfo.BedTemp),
+                    finish: new Option<Finish?>(FinishValueConverter.FromStringOrDefault(fillamentInfo.Finish ?? "")), //not implemented jet
+                    multiColorDirection: new Option<SpoolmanExternaldbMultiColorDirection?>(SpoolmanExternaldbMultiColorDirectionValueConverter.FromStringOrDefault(fillamentInfo.MultiColorDirection ?? "")), //not implemented jet
+                    pattern: new Option<Pattern?>(PatternValueConverter.FromStringOrDefault(fillamentInfo.Pattern ?? "")), //not implemented jet
+                    translucent: new Option<bool?>(fillamentInfo.Translucent),
+                    glow: new Option<bool?>(fillamentInfo.Glow) //not implemented jet
+                );
 
-                            var filament = new ExternalFilament(
-                                id,
-                                DefaultBambuLabVendor,
-                                name,
-                                fillamentInfo.Material,
-                                fillamentInfo.Density,
-                                fillamentInfoWeight.SpoolWeight,
-                                fillamentInfoDiameter,
-                                spoolWeight: new Option<decimal?>(fillamentInfoWeight.SpoolWeight),
-                                spoolType: new Option<SpoolType?>(fillamentInfoWeight.SpoolType),
-                                colorHex: new Option<string?>(color.Hex),
-                                colorHexes: new Option<List<string>?>(), //not implemented jet
-                                extruderTemp: new Option<int?>(fillamentInfo.ExtruderTemp),
-                                bedTemp: new Option<int?>(fillamentInfo.BedTemp),
-                                finish: new Option<Finish?>(), //not implemented jet
-                                multiColorDirection: new Option<SpoolmanExternaldbMultiColorDirection?>(), //not implemented jet
-                                pattern: new Option<Pattern?>(), //not implemented jet
-                                translucent: new Option<bool?>(fillamentInfo.Translucent),
-                                glow: new Option<bool?>() //not implemented jet
-                            );
-
-                            bambuLabExternalFilaments.Add(filament);
-                        }
-                    }
-                }
+                bambuLabExternalFilaments.Add(filament);
             }
 
             return Task.CompletedTask;

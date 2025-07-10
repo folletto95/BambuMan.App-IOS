@@ -166,8 +166,10 @@ public class BambuFillamentInfo : ITagInfo
     /// </summary>
     public string? SkuStart { get; set; }
 
-    public void ParseData(byte[][] blockData)
+    public void ParseData(byte[][] blockData, bool fillSerial = false)
     {
+        if (fillSerial) SerialNumber = BitConverter.ToString(blockData[0][..4]).Replace("-", "");
+
         TagManufacturerData = blockData[0].Length > 4 ? blockData[0][4..] : [];
 
         if (blockData[1].Length > 8) MaterialVariantIdentifier = Encoding.ASCII.GetString(blockData[1][..8]).Trim('\u0000');
