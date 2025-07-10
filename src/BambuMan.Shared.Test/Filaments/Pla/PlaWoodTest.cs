@@ -7,14 +7,15 @@
         public async Task ClassicBirch()
         {
             var json = "{\"SerialNumber\":\"5B1449F6\",\"TagManufacturerData\":\"8AgEAATrOVf5DLaQ\",\"MaterialVariantIdentifier\":\"A16-G0\",\"UniqueMaterialIdentifier\":\"FA16\",\"FilamentType\":\"PLA\",\"DetailedFilamentType\":\"PLA Wood\",\"Color\":\"918669FF\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":60,\"DryingTime\":6,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":230,\"MinTemperatureForHotend\":190,\"XCamInfo\":\"AAAAAAAAAAAAAAAA\",\"NozzleDiameter\":0.2,\"TrayUid\":\"4663E9ADF9CC454380EB58CE627BFE72\",\"SpoolWidth\":1536,\"ProductionDateTime\":\"2025-03-11T00:38:00\",\"ProductionDateTimeShort\":\"25_03_11_00\",\"FilamentLength\":330,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"A16-G0-1.75-1000\"}";
-
+            //var json = "{\"SerialNumber\":\"9A7FECFE\",\"TagManufacturerData\":\"9wgEAASfx4gx5BuQ\",\"MaterialVariantIdentifier\":\"A16-G0\",\"UniqueMaterialIdentifier\":\"FA16\",\"FilamentType\":\"PLA\",\"DetailedFilamentType\":\"PLA Wood\",\"Color\":\"918669FF\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":60,\"DryingTime\":6,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":230,\"MinTemperatureForHotend\":190,\"XCamInfo\":\"AAAAAAAAAAAAAAAA\",\"NozzleDiameter\":0.2,\"TrayUid\":\"1008295892FE45D4B310C9CCBB6D501B\",\"SpoolWidth\":1536,\"ProductionDateTime\":\"2024-09-16T07:11:00\",\"ProductionDateTimeShort\":\"24_09_16_07\",\"FilamentLength\":330,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"A16-G0-1.75-1000\"}";
+            
             var (_, external) = await GetExternalFilament(json);
             
             Assert.Equal("Classic Birch", external?.Name);
             Assert.Equal("PLA+WOOD", external?.Material);
         }
 
-        [Fact(DisplayName = "BlackWalnut")]
+        [Fact(DisplayName = "Black Walnut")]
         public async Task BlackWalnut()
         {
             var json = "{\"SerialNumber\":\"3A78A1FD\",\"TagManufacturerData\":\"HggEAARb0K0PxXGQ\",\"MaterialVariantIdentifier\":\"A16-K0\",\"UniqueMaterialIdentifier\":\"FA16\",\"FilamentType\":\"PLA\",\"DetailedFilamentType\":\"PLA Wood\",\"Color\":\"4F3F24FF\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":60,\"DryingTime\":6,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":230,\"MinTemperatureForHotend\":190,\"XCamInfo\":\"AAAAAAAAAAAAAAAA\",\"NozzleDiameter\":0.2,\"TrayUid\":\"61F0FC6434024A84B4CAA3A025336377\",\"SpoolWidth\":1536,\"ProductionDateTime\":\"2024-09-21T06:01:00\",\"ProductionDateTimeShort\":\"24_09_21_06\",\"FilamentLength\":330,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"A16-K0-1.75-1000\"}";
@@ -55,6 +56,17 @@
             var (_, external) = await GetExternalFilament(json);
             
             Assert.Equal("White Oak", external?.Name);
+            Assert.Equal("PLA+WOOD", external?.Material);
+        }
+
+        [Fact(DisplayName = "Rosewood")]
+        public async Task Rosewood ()
+        {
+            var json = "{\"SerialNumber\":\"0509F50D\",\"TagManufacturerData\":\"9AgEAASm165pzJOQ\",\"MaterialVariantIdentifier\":\"A16-R0\",\"UniqueMaterialIdentifier\":\"FA16\",\"FilamentType\":\"PLA\",\"DetailedFilamentType\":\"PLA Wood\",\"Color\":\"3F231CFF\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":60,\"DryingTime\":6,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":230,\"MinTemperatureForHotend\":190,\"XCamInfo\":\"AAAAAAAAAAAAAAAA\",\"NozzleDiameter\":0.2,\"TrayUid\":\"26E72842404F41F2A227FC7276299DFA\",\"SpoolWidth\":1536,\"ProductionDateTime\":\"2025-03-24T14:32:00\",\"ProductionDateTimeShort\":\"25_03_24_14\",\"FilamentLength\":330,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"A16-R0-1.75-1000\"}";
+
+            var (_, external) = await GetExternalFilament(json);
+            
+            Assert.Equal("Rosewood", external?.Name);
             Assert.Equal("PLA+WOOD", external?.Material);
         }
     }

@@ -395,6 +395,7 @@ namespace BambuMan.Shared
                                      (x.ColorHexes != null && x.ColorHexes.Contains(color, StringComparer.CurrentCultureIgnoreCase)) ||
                                      (info.FilamentType == "ASA" && color == "FFFFFF" && x.ColorHex != null && x.ColorHex.Equals("FFFAF2", StringComparison.CurrentCultureIgnoreCase)) || //ASA filament hex color is different on spoolman db vs tag
                                      (info.FilamentType == "ASA Aero" && color == "E9E4D9" && x.ColorHex != null && x.ColorHex.Equals("F5F1DD", StringComparison.CurrentCultureIgnoreCase)) || //ASA filament hex color is different on spoolman db vs tag
+                                     (info.DetailedFilamentType == "PLA Wood" && color == "3F231C" && x.ColorHex != null && x.ColorHex.Equals("4C241C", StringComparison.CurrentCultureIgnoreCase)) || //PETG HF red filament hex color is different on spoolman db vs tag
                                      (info.DetailedFilamentType == "PETG HF" && color == "BC0900" && x.ColorHex != null && x.ColorHex.Equals("EB3A3A", StringComparison.CurrentCultureIgnoreCase)) || //PETG HF red filament hex color is different on spoolman db vs tag
                                      (info.DetailedFilamentType == "PETG Translucent" && color == "000000" && x.ColorHex != null && x.ColorHex.Equals("FFFFFF", StringComparison.CurrentCultureIgnoreCase)));  //PETG Translucent clear filament hex color is different on spoolman db vs tag
 
@@ -739,29 +740,34 @@ namespace BambuMan.Shared
 
             foreach (var fillamentInfo in fillamentInfos)
             {
-                if (bambuLabExternalFilaments.Any(x => x.Id == fillamentInfo.Id)) continue;
-
                 var filament = new ExternalFilament(
                     fillamentInfo.Id,
                     fillamentInfo.Manufacturer,
                     fillamentInfo.Name,
                     fillamentInfo.Material,
                     fillamentInfo.Density,
-                    fillamentInfo.SpoolWeight,
+                    fillamentInfo.WeightValue,
                     fillamentInfo.Diameter,
                     spoolWeight: new Option<decimal?>(fillamentInfo.SpoolWeight),
                     spoolType: new Option<SpoolType?>(SpoolTypeValueConverter.FromStringOrDefault(fillamentInfo.SpoolType ?? "")),
                     colorHex: new Option<string?>(fillamentInfo.ColorHex),
-                    colorHexes: new Option<List<string>?>(fillamentInfo.ColorHexes?.ToList()), //not implemented jet
+                    colorHexes: new Option<List<string>?>(fillamentInfo.ColorHexes?.ToList()),
                     extruderTemp: new Option<int?>(fillamentInfo.ExtruderTemp),
                     bedTemp: new Option<int?>(fillamentInfo.BedTemp),
-                    finish: new Option<Finish?>(FinishValueConverter.FromStringOrDefault(fillamentInfo.Finish ?? "")), //not implemented jet
+                    finish: new Option<Finish?>(FinishValueConverter.FromStringOrDefault(fillamentInfo.Finish ?? "")),
                     multiColorDirection: new Option<SpoolmanExternaldbMultiColorDirection?>(SpoolmanExternaldbMultiColorDirectionValueConverter.FromStringOrDefault(fillamentInfo.MultiColorDirection ?? "")), //not implemented jet
-                    pattern: new Option<Pattern?>(PatternValueConverter.FromStringOrDefault(fillamentInfo.Pattern ?? "")), //not implemented jet
+                    pattern: new Option<Pattern?>(PatternValueConverter.FromStringOrDefault(fillamentInfo.Pattern ?? "")),
                     translucent: new Option<bool?>(fillamentInfo.Translucent),
-                    glow: new Option<bool?>(fillamentInfo.Glow) //not implemented jet
+                    glow: new Option<bool?>(fillamentInfo.Glow)
                 );
 
+                var filamentJson = JsonConvert.SerializeObject(filament);
+
+                var existingFilament = bambuLabExternalFilaments.FirstOrDefault(x => x.Id == fillamentInfo.Id && x.Weight == filament.Weight);
+                var existingFilamentJson = JsonConvert.SerializeObject(existingFilament);
+                
+                if (filamentJson == existingFilamentJson) continue;
+                
                 bambuLabExternalFilaments.Add(filament);
             }
 
