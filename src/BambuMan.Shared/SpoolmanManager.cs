@@ -404,11 +404,13 @@ namespace BambuMan.Shared
             if (info.DetailedFilamentType.ContainsCI("Support"))
             {
                 var nameToSearch = info.DetailedFilamentType;
+                var nameToSearchDe = info.DetailedFilamentType;
 
                 //white translucent Support for PLA is identified as black. Don't know if black is same 
                 if (info.DetailedFilamentType.EqualsCI("Support for PLA") && info.MaterialVariantIdentifier.EqualsCI("S05-C0"))
                 {
                     nameToSearch = "Support for PLA/PETG Nature";
+                    nameToSearchDe = "Support for PLA/PETG Natur";
                     hexColor = "FFFFFF";
                 }
 
@@ -416,11 +418,12 @@ namespace BambuMan.Shared
                 if (info.DetailedFilamentType.EqualsCI("Support W") && info.MaterialVariantIdentifier.EqualsCI("S00-W0"))
                 {
                     nameToSearch = "Support for PLA White";
+                    nameToSearchDe = "Support for PLA Weiß";
                     hexColor = "FFFFFF";
                 }
 
                 query = BambuLabExternalFilaments
-                    .Where(x => x.Name.StartsWithCI(nameToSearch))
+                    .Where(x => x.Name.StartsWithCI(nameToSearch) || x.Name.StartsWithCI(nameToSearchDe))
                     .Where(x => x.ColorHex.EqualsCI(hexColor)).AsQueryable();
             }
             else if (info.ColorCount.GetValueOrDefault() > 1 && query.Count() != 1) //multi color spool
@@ -461,11 +464,11 @@ namespace BambuMan.Shared
             {
                 query = query.Where(x => !x.Name.StartsWithCI("FR "));
 
-                if (color == "FFFFFF" && info.UniqueMaterialIdentifier.EqualsCI("FC00")) query = query.Where(x => x.Name.EqualsCI("White"));
+                if (color == "FFFFFF" && info.UniqueMaterialIdentifier.EqualsCI("FC00")) query = query.Where(x => x.Name.EqualsCI("White") || x.Name.EqualsCI("Weiß"));
                 if (color == "FFFFFF" && !info.UniqueMaterialIdentifier.EqualsCI("FC00")) query = query.Where(x => x.Name.EqualsCI("Transparent"));
             }
 
-            if (info.MaterialVariantIdentifier.EqualsCI("A00-W1")) query = query.Where(x => x.Name.EqualsCI("Jade White"));
+            if (info.MaterialVariantIdentifier.EqualsCI("A00-W1")) query = query.Where(x => x.Name.EqualsCI("Jade White") || x.Name.EqualsCI("Jade Weiß"));
 
             var result = query.ToList();
 
