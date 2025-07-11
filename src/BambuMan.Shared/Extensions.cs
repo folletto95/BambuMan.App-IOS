@@ -22,7 +22,7 @@ namespace BambuMan.Shared
         }
 
         public static string ToHex(this Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}";
-        
+
         public static string DarkHex(this string seed) => DarkHex(seed.DeterministicHashCode());
 
         public static string DarkHex(this int hash)
@@ -32,7 +32,7 @@ namespace BambuMan.Shared
 
             return HslToHex(hue, 100, light);
         }
-        
+
         public static string HslToHex(int preciseHue, int preciseSaturation, int preciseLight)
         {
             double red, green, blue;
@@ -75,17 +75,17 @@ namespace BambuMan.Shared
 
             return Color.FromArgb(nRed, nGreen, nBlue).ToHex();
         }
-        
+
         private static double Hue2Rgb(double v1, double v2, double vH)
         {
             if (vH < 0.0) vH += 1.0;
-            
+
             if (vH > 1.0) vH -= 1.0;
-            
+
             if (6.0 * vH < 1.0) return v1 + (v2 - v1) * 6.0 * vH;
-            
+
             if (2.0 * vH < 1.0) return v2;
-            
+
             if (3.0 * vH < 2.0) return v1 + (v2 - v1) * (2.0 / 3.0 - vH) * 6.0;
 
             return v1;
@@ -95,7 +95,7 @@ namespace BambuMan.Shared
         {
             // Turns out string.GetHashCode() is not deterministic between runs.
             // https://andrewlock.net/why-is-string-gethashcode-different-each-time-i-run-my-program-in-net-core/
-    
+
             unchecked
             {
                 var hash1 = (5381 << 16) + 5381;
@@ -111,12 +111,12 @@ namespace BambuMan.Shared
                 return hash1 + hash2 * 1566083941;
             }
         }
-        
+
         public static bool IsNullOrEmpty(this string s)
         {
             return string.IsNullOrEmpty(s);
         }
-        
+
         public static bool IsNullOrWhiteSpace(this string s)
         {
             return s == null || s.All(char.IsWhiteSpace);
@@ -143,6 +143,30 @@ namespace BambuMan.Shared
             if (ext.IsNotNullOrEmpty()) length -= ext.Length;
 
             return s.Length > length ? s.Substring(0, length) + ext : s;
+        }
+
+        // ReSharper disable once InconsistentNaming
+        public static bool EqualsCI(this string? source, string? value)
+        {
+            if (source == null || value == null) return false;
+
+            return source.Equals(value, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // ReSharper disable once InconsistentNaming
+        public static bool ContainsCI(this string? source, string? value)
+        {
+            if (source == null || value == null) return false;
+
+            return source.Contains(value, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // ReSharper disable once InconsistentNaming
+        public static bool StartsWithCI(this string? source, string? value)
+        {
+            if (source == null || value == null) return false;
+
+            return source.StartsWith(value, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

@@ -368,114 +368,104 @@ namespace BambuMan.Shared
             var hexColor = info.Color?.Substring(0, 6) ?? string.Empty;
             var opacity = info.Color?.Substring(6).StringToByteArray().FirstOrDefault() ?? 255;
             var transparent = opacity < 255;
-
             var color = hexColor;
-
-#if DEBUG
-            // ReSharper disable once UnusedVariable
-            var t = BambuLabExternalFilaments.FirstOrDefault(x => x.Id == "bambulab_petg_red_1000_175_n");
-            // ReSharper disable once UnusedVariable
-            var material = BambuLabExternalFilaments.Where(x => x.Material == info.FilamentType).ToArray();
-#endif
 
             var query = BambuLabExternalFilaments.AsQueryable();
 
-            query = query.Where(x => x.Material == info.FilamentType ||
-                                     info.DetailedFilamentType == "PA6-GF" && x.Material == "PA6-GF" ||
-                                     info.DetailedFilamentType == "ASA Aero" && x.Material == "ASA" && x.Name.Contains("Aero", StringComparison.CurrentCultureIgnoreCase) ||
-                                     info.DetailedFilamentType == "PLA Aero" && x.Material == "PLA" && x.Name.Contains("Aero", StringComparison.CurrentCultureIgnoreCase) ||
-                                     info.DetailedFilamentType == "PA-CF" && x.Material == "PA6-CF" ||
-                                     info.DetailedFilamentType == "PAHT-CF" && x.Material == "PAHT-CF" ||
-                                     info.DetailedFilamentType == "PLA Wood" && x.Material == "PLA+WOOD" ||
-                                     info.DetailedFilamentType == "TPU for AMS" && x.Material == "TPU" && x.Name.StartsWith("For AMS"));
+            query = query.Where(x => x.Material.EqualsCI(info.FilamentType) ||
+                                     info.DetailedFilamentType.EqualsCI("PA6-GF") && x.Material.EqualsCI("PA6-GF") ||
+                                     info.DetailedFilamentType.EqualsCI("ASA Aero") && x.Material.EqualsCI("ASA") && x.Name.ContainsCI("Aero") ||
+                                     info.DetailedFilamentType.EqualsCI("PLA Aero") && x.Material.EqualsCI("PLA") && x.Name.ContainsCI("Aero") ||
+                                     info.DetailedFilamentType.EqualsCI("PA-CF") && x.Material.EqualsCI("PA6-CF") ||
+                                     info.DetailedFilamentType.EqualsCI("PAHT-CF") && x.Material.EqualsCI("PAHT-CF") ||
+                                     info.DetailedFilamentType.EqualsCI("PLA Wood") && x.Material.EqualsCI("PLA+WOOD") ||
+                                     info.DetailedFilamentType.EqualsCI("TPU for AMS") && x.Material.EqualsCI("TPU") && x.Name.StartsWithCI("For AMS"));
+#if DEBUG
+            var resultWitType = query.ToArray();
+#endif
+            query = query.Where(x => (x.ColorHex.EqualsCI(color)) ||
+                                     (x.ColorHexes != null && color != null && x.ColorHexes.Contains(color, StringComparer.OrdinalIgnoreCase)) ||
+                                     (info.FilamentType.EqualsCI("ASA") && color.EqualsCI("FFFFFF") && x.ColorHex.EqualsCI("FFFAF2")) || //ASA filament hex color is different on spoolman db vs tag
+                                     (info.FilamentType.EqualsCI("ASA Aero") && color.EqualsCI("E9E4D9") && x.ColorHex.EqualsCI("F5F1DD")) || //ASA filament hex color is different on spoolman db vs tag
+                                     (info.DetailedFilamentType.EqualsCI("PLA Wood") && color.EqualsCI("3F231C") && x.ColorHex.EqualsCI("4C241C")) || //PETG HF red filament hex color is different on spoolman db vs tag
+                                     (info.DetailedFilamentType.EqualsCI("PETG HF") && color.EqualsCI("BC0900") && x.ColorHex.EqualsCI("EB3A3A")) || //PETG HF red filament hex color is different on spoolman db vs tag
+                                     (info.DetailedFilamentType.EqualsCI("PETG Translucent") && color.EqualsCI("000000") && x.ColorHex.EqualsCI("FFFFFF")));  //PETG Translucent clear filament hex color is different on spoolman db vs tag
 
-            var t1 = query.ToArray();
-
-            query = query.Where(x => (x.ColorHex != null && x.ColorHex.Equals(color, StringComparison.CurrentCultureIgnoreCase)) ||
-                                     (x.ColorHexes != null && x.ColorHexes.Contains(color, StringComparer.CurrentCultureIgnoreCase)) ||
-                                     (info.FilamentType == "ASA" && color == "FFFFFF" && x.ColorHex != null && x.ColorHex.Equals("FFFAF2", StringComparison.CurrentCultureIgnoreCase)) || //ASA filament hex color is different on spoolman db vs tag
-                                     (info.FilamentType == "ASA Aero" && color == "E9E4D9" && x.ColorHex != null && x.ColorHex.Equals("F5F1DD", StringComparison.CurrentCultureIgnoreCase)) || //ASA filament hex color is different on spoolman db vs tag
-                                     (info.DetailedFilamentType == "PLA Wood" && color == "3F231C" && x.ColorHex != null && x.ColorHex.Equals("4C241C", StringComparison.CurrentCultureIgnoreCase)) || //PETG HF red filament hex color is different on spoolman db vs tag
-                                     (info.DetailedFilamentType == "PETG HF" && color == "BC0900" && x.ColorHex != null && x.ColorHex.Equals("EB3A3A", StringComparison.CurrentCultureIgnoreCase)) || //PETG HF red filament hex color is different on spoolman db vs tag
-                                     (info.DetailedFilamentType == "PETG Translucent" && color == "000000" && x.ColorHex != null && x.ColorHex.Equals("FFFFFF", StringComparison.CurrentCultureIgnoreCase)));  //PETG Translucent clear filament hex color is different on spoolman db vs tag
-
-            var t2 = query.ToArray();
+#if DEBUG
+            var resultWitColor = query.ToArray();
+#endif
 
             query = query.Where(x => x.Translucent == transparent || x.Translucent == null && !transparent);
 
-            var t3 = query.ToArray();
+#if DEBUG
+            var resultWitTransparency = query.ToArray();
+#endif
 
-            if (info.DetailedFilamentType?.Contains("Support", StringComparison.CurrentCultureIgnoreCase) ?? false)
+            if (info.DetailedFilamentType.ContainsCI("Support"))
             {
                 var nameToSearch = info.DetailedFilamentType;
 
                 //white translucent Support for PLA is identified as black. Don't know if black is same 
-                if (info is { DetailedFilamentType: "Support for PLA", MaterialVariantIdentifier: "S05-C0" })
+                if (info.DetailedFilamentType.EqualsCI("Support for PLA") && info.MaterialVariantIdentifier.EqualsCI("S05-C0"))
                 {
                     nameToSearch = "Support for PLA/PETG Nature";
                     hexColor = "FFFFFF";
                 }
 
                 //white translucent Support for PLA is identified as black. Don't know if black is same 
-                if (info is { DetailedFilamentType: "Support W", MaterialVariantIdentifier: "S00-W0" })
+                if (info.DetailedFilamentType.EqualsCI("Support W") && info.MaterialVariantIdentifier.EqualsCI("S00-W0"))
                 {
                     nameToSearch = "Support for PLA White";
                     hexColor = "FFFFFF";
                 }
 
                 query = BambuLabExternalFilaments
-                    .Where(x => x.Name.StartsWith(nameToSearch, StringComparison.CurrentCultureIgnoreCase))
-                    .Where(x => x.ColorHex?.Equals(hexColor, StringComparison.CurrentCultureIgnoreCase) ?? false).AsQueryable();
+                    .Where(x => x.Name.StartsWithCI(nameToSearch))
+                    .Where(x => x.ColorHex.EqualsCI(hexColor)).AsQueryable();
             }
-            //multi color spool
-            else if (info.ColorCount.GetValueOrDefault() > 1 && query.Count() != 1)
+            else if (info.ColorCount.GetValueOrDefault() > 1 && query.Count() != 1) //multi color spool
             {
                 var hexSecondColor = info.SecondColor?.Substring(0, 6) ?? string.Empty;
                 var colors = new[] { color, hexSecondColor };
 
-                if (info.MaterialVariantIdentifier?.Equals("A05-T1", StringComparison.CurrentCultureIgnoreCase) ?? false) colors = ["FF9425", "FCA2BF"];
-                if (info.MaterialVariantIdentifier?.Equals("A05-T2", StringComparison.CurrentCultureIgnoreCase) ?? false) colors = ["0047BB", "7D1B49"];
-                if (info.MaterialVariantIdentifier?.Equals("A05-T3", StringComparison.CurrentCultureIgnoreCase) ?? false) colors = ["0047BB", "BB22A3"];
-                if (info.MaterialVariantIdentifier?.Equals("A05-T4", StringComparison.CurrentCultureIgnoreCase) ?? false) colors = ["60A4E8", "4CE4A0"];
-                if (info.MaterialVariantIdentifier?.Equals("A05-T5", StringComparison.CurrentCultureIgnoreCase) ?? false) colors = ["000000", "A34342"];
+                if (info.MaterialVariantIdentifier.EqualsCI("A05-T1")) colors = ["FF9425", "FCA2BF"];
+                if (info.MaterialVariantIdentifier.EqualsCI("A05-T2")) colors = ["0047BB", "7D1B49"];
+                if (info.MaterialVariantIdentifier.EqualsCI("A05-T3")) colors = ["0047BB", "BB22A3"];
+                if (info.MaterialVariantIdentifier.EqualsCI("A05-T4")) colors = ["60A4E8", "4CE4A0"];
+                if (info.MaterialVariantIdentifier.EqualsCI("A05-T5")) colors = ["000000", "A34342"];
 
                 query = BambuLabExternalFilaments
                     .Where(x => x.Material == info.FilamentType)
-                    .Where(x => x.ColorHexes != null && colors.All(c => x.ColorHexes.Contains(c))).AsQueryable();
-
-                var t5 = query.ToList();
+                    .Where(x => x.ColorHexes != null && colors.All(c => x.ColorHexes.Contains(c, StringComparer.OrdinalIgnoreCase))).AsQueryable();
             }
-            else query = query.Where(x => !x.Name.Contains("Support", StringComparison.CurrentCultureIgnoreCase));
+            else query = query.Where(x => !x.Name.ContainsCI("Support"));
 
-            if (info.DetailedFilamentType?.Contains("Basic", StringComparison.CurrentCultureIgnoreCase) ?? false) query = query.Where(x => x.Finish == null && x.Pattern == null);
-            else if (info.DetailedFilamentType?.Contains("Matte", StringComparison.CurrentCultureIgnoreCase) ?? false) query = query.Where(x => x.Finish == Finish.Matte);
-            else if (info.DetailedFilamentType?.Contains("Glow", StringComparison.CurrentCultureIgnoreCase) ?? false) query = query.Where(x => x.Glow == true);
-            else if (info.DetailedFilamentType?.Contains("Silk+", StringComparison.CurrentCultureIgnoreCase) ?? false) query = query.Where(x => x.Name.Contains("Silk+", StringComparison.CurrentCultureIgnoreCase));
-            else if (info.DetailedFilamentType?.Contains("Aero", StringComparison.CurrentCultureIgnoreCase) ?? false) query = query.Where(x => x.Name.Contains("Aero", StringComparison.CurrentCultureIgnoreCase));
-            else if (info.DetailedFilamentType?.Contains("Silk", StringComparison.CurrentCultureIgnoreCase) ??
-                     info.DetailedFilamentType?.Contains("Metallic", StringComparison.CurrentCultureIgnoreCase) ??
-                     info.DetailedFilamentType?.Contains("Galaxy", StringComparison.CurrentCultureIgnoreCase) ??
-                     false) query = query.Where(x => x.Finish == Finish.Glossy);
-
-            if (info.DetailedFilamentType?.Equals("PETG HF", StringComparison.CurrentCultureIgnoreCase) ?? false)
-                query = query.Where(x => x.Name.StartsWith("HF "));
-
-            if (info.DetailedFilamentType?.Equals("PC FR", StringComparison.CurrentCultureIgnoreCase) ?? false)
-                query = query.Where(x => x.Name.StartsWith("FR "));
-
-            if (info.DetailedFilamentType?.Equals("PC", StringComparison.CurrentCultureIgnoreCase) ?? false)
+            query = info.DetailedFilamentType switch
             {
-                query = query.Where(x => !x.Name.StartsWith("FR "));
+                var type when type.ContainsCI("Basic") => query.Where(x => x.Finish == null && x.Pattern == null),
+                var type when type.ContainsCI("Matte") => query.Where(x => x.Finish == Finish.Matte),
+                var type when type.ContainsCI("Glow") => query.Where(x => x.Glow == true),
+                var type when type.ContainsCI("Silk+") => query.Where(x => x.Name.ContainsCI("Silk+")),
+                var type when type.ContainsCI("Aero") => query.Where(x => x.Name.ContainsCI("Aero")),
+                var type when type.ContainsCI("Silk") ||
+                              type.ContainsCI("Metallic") ||
+                              type.ContainsCI("Galaxy") => query.Where(x => x.Finish == Finish.Glossy),
 
-                if (color == "FFFFFF" && (info.UniqueMaterialIdentifier?.Equals("FC00", StringComparison.CurrentCultureIgnoreCase) ?? false))
-                    query = query.Where(x => x.Name.Equals("White", StringComparison.CurrentCultureIgnoreCase));
+                var type when type.EqualsCI("PETG HF") => query.Where(x => x.Name.StartsWithCI("HF ")),
+                var type when type.EqualsCI("PC FR") => query.Where(x => x.Name.StartsWithCI("FR ")),
 
-                if (color == "FFFFFF" && !(info.UniqueMaterialIdentifier?.Equals("FC00", StringComparison.CurrentCultureIgnoreCase) ?? false))
-                    query = query.Where(x => x.Name.Equals("Transparent", StringComparison.CurrentCultureIgnoreCase));
+                _ => query
+            };
+
+            if (info.DetailedFilamentType.EqualsCI("PC"))
+            {
+                query = query.Where(x => !x.Name.StartsWithCI("FR "));
+
+                if (color == "FFFFFF" && info.UniqueMaterialIdentifier.EqualsCI("FC00")) query = query.Where(x => x.Name.EqualsCI("White"));
+                if (color == "FFFFFF" && !info.UniqueMaterialIdentifier.EqualsCI("FC00")) query = query.Where(x => x.Name.EqualsCI("Transparent"));
             }
 
-            if (info.MaterialVariantIdentifier?.Equals("A00-W1", StringComparison.CurrentCultureIgnoreCase) ?? false)
-                query = query.Where(x => x.Name.Equals("Jade White", StringComparison.CurrentCultureIgnoreCase));
+            if (info.MaterialVariantIdentifier.EqualsCI("A00-W1")) query = query.Where(x => x.Name.EqualsCI("Jade White"));
 
             var result = query.ToList();
 
@@ -740,6 +730,8 @@ namespace BambuMan.Shared
 
             foreach (var fillamentInfo in fillamentInfos)
             {
+                if (bambuLabExternalFilaments.Any(x => x.Id == fillamentInfo.Id && x.Weight == fillamentInfo.WeightValue)) continue;
+
                 var filament = new ExternalFilament(
                     fillamentInfo.Id,
                     fillamentInfo.Manufacturer,
@@ -761,13 +753,6 @@ namespace BambuMan.Shared
                     glow: new Option<bool?>(fillamentInfo.Glow)
                 );
 
-                var filamentJson = JsonConvert.SerializeObject(filament);
-
-                var existingFilament = bambuLabExternalFilaments.FirstOrDefault(x => x.Id == fillamentInfo.Id && x.Weight == filament.Weight);
-                var existingFilamentJson = JsonConvert.SerializeObject(existingFilament);
-                
-                if (filamentJson == existingFilamentJson) continue;
-                
                 bambuLabExternalFilaments.Add(filament);
             }
 
