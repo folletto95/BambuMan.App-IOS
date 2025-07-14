@@ -380,9 +380,11 @@ namespace BambuMan.Shared
                                      info.DetailedFilamentType.EqualsCI("PAHT-CF") && x.Material.EqualsCI("PAHT-CF") ||
                                      info.DetailedFilamentType.EqualsCI("PLA Wood") && x.Material.EqualsCI("PLA+WOOD") ||
                                      info.DetailedFilamentType.EqualsCI("TPU for AMS") && x.Material.EqualsCI("TPU") && x.Name.StartsWithCI("For AMS"));
+
 #if DEBUG
             var resultWitType = query.ToArray();
 #endif
+
             query = query.Where(x => (x.ColorHex.EqualsCI(color)) ||
                                      (x.ColorHexes != null && color != null && x.ColorHexes.Contains(color, StringComparer.OrdinalIgnoreCase)) ||
                                      (info.FilamentType.EqualsCI("ASA") && color.EqualsCI("FFFFFF") && x.ColorHex.EqualsCI("FFFAF2")) || //ASA filament hex color is different on spoolman db vs tag
@@ -392,6 +394,7 @@ namespace BambuMan.Shared
                                      (info.DetailedFilamentType.EqualsCI("PETG Translucent") && color.EqualsCI("000000") && x.ColorHex.EqualsCI("FFFFFF")));  //PETG Translucent clear filament hex color is different on spoolman db vs tag
 
 #if DEBUG
+
             var resultWitColor = query.ToArray();
 #endif
 
