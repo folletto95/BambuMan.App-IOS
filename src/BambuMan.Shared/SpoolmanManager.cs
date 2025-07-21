@@ -480,7 +480,7 @@ namespace BambuMan.Shared
                 if (color == "FFFFFF" && !info.UniqueMaterialIdentifier.EqualsCI("FC00")) query = query.Where(x => x.Name.EqualsCI("Transparent"));
             }
 
-            if (info.MaterialVariantIdentifier.EqualsCI("A00-W1")) query = query.Where(x => x.Name.EqualsCI("Jade White") || x.Name.EqualsCI("Jade Weiß"));
+            if (info.MaterialVariantIdentifier.EqualsCI("A00-W1")) query = query.Where(x => x.Id.EqualsCI("bambulab_pla_jadewhite_1000_175_n"));
 
             var result = query.ToList();
 
