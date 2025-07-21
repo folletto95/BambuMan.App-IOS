@@ -59,10 +59,21 @@
             Assert.Equal("PLA+WOOD", external?.Material);
         }
 
-        [Fact(DisplayName = "Rosewood")]
-        public async Task Rosewood ()
+        [Fact(DisplayName = "Rosewood 1")]
+        public async Task Rosewood1()
         {
             var json = "{\"SerialNumber\":\"0509F50D\",\"TagManufacturerData\":\"9AgEAASm165pzJOQ\",\"MaterialVariantIdentifier\":\"A16-R0\",\"UniqueMaterialIdentifier\":\"FA16\",\"FilamentType\":\"PLA\",\"DetailedFilamentType\":\"PLA Wood\",\"Color\":\"3F231CFF\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":60,\"DryingTime\":6,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":230,\"MinTemperatureForHotend\":190,\"XCamInfo\":\"AAAAAAAAAAAAAAAA\",\"NozzleDiameter\":0.2,\"TrayUid\":\"26E72842404F41F2A227FC7276299DFA\",\"SpoolWidth\":1536,\"ProductionDateTime\":\"2025-03-24T14:32:00\",\"ProductionDateTimeShort\":\"25_03_24_14\",\"FilamentLength\":330,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"A16-R0-1.75-1000\"}";
+
+            var (_, external) = await GetExternalFilament(json);
+            
+            Assert.Equal("Rosewood", external?.Name);
+            Assert.Equal("PLA+WOOD", external?.Material);
+        }
+
+        [Fact(DisplayName = "Rosewood 2")]
+        public async Task Rosewood2()
+        {
+            var json = "{\"SerialNumber\":\"3AFF68F3\",\"TagManufacturerData\":\"XggEAAQRXW38hQuQ\",\"MaterialVariantIdentifier\":\"A16-R0\",\"UniqueMaterialIdentifier\":\"FA16\",\"FilamentType\":\"PLA\",\"DetailedFilamentType\":\"PLA Wood\",\"Color\":\"3F231CFF\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":60,\"DryingTime\":6,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":230,\"MinTemperatureForHotend\":190,\"XCamInfo\":\"AAAAAAAAAAAAAAAA\",\"NozzleDiameter\":0.2,\"TrayUid\":\"63E74F199E4D45B69D50382354F674C9\",\"SpoolWidth\":1536,\"ProductionDateTime\":\"2024-09-28T13:45:00\",\"ProductionDateTimeShort\":\"24_09_28_13\",\"FilamentLength\":330,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"A16-R0-1.75-1000\"}";
 
             var (_, external) = await GetExternalFilament(json);
             

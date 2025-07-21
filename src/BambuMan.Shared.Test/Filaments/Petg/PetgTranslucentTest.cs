@@ -3,10 +3,21 @@
     [Trait("Category", "PETG")]
     public class PetgTranslucentTest : BaseTest
     {
-        [Fact(DisplayName = "Clear")]
+        [Fact(DisplayName = "Clear 1")]
         public async Task Clear()
         {
             var json = "{\"SerialNumber\":\"DAC888FB\",\"TagManufacturerData\":\"YQgEAASo9nmRwduQ\",\"MaterialVariantIdentifier\":\"G01-C0\",\"UniqueMaterialIdentifier\":\"FG01\",\"FilamentType\":\"PETG\",\"DetailedFilamentType\":\"PETG Translucent\",\"Color\":\"00000000\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":65,\"DryingTime\":8,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":260,\"MinTemperatureForHotend\":230,\"XCamInfo\":\"pDiAPrwCIAMAAIA/\",\"NozzleDiameter\":0.2,\"TrayUid\":\"697C12C070E044FAA79740483B46139A\",\"SpoolWidth\":2875,\"ProductionDateTime\":\"2024-08-17T16:11:00\",\"ProductionDateTimeShort\":\"20240817\",\"FilamentLength\":330,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"G01-C0-1.75-1000\"}";
+
+            var (_, external) = await GetExternalFilament(json);
+            
+            Assert.Equal("Clear", external?.Name);
+            Assert.Equal("PETG", external?.Material);
+        }
+        
+        [Fact(DisplayName = "Clear 2")]
+        public async Task Clear2()
+        {
+            var json = "{\"SerialNumber\":\"739733A2\",\"TagManufacturerData\":\"dQgEAARRcDqGi3uQ\",\"MaterialVariantIdentifier\":\"G01-C0\",\"UniqueMaterialIdentifier\":\"FG01\",\"FilamentType\":\"PETG\",\"DetailedFilamentType\":\"PETG Translucent\",\"Color\":\"00000000\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":65,\"DryingTime\":8,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":260,\"MinTemperatureForHotend\":230,\"XCamInfo\":\"pDiAPrwCIAMAAIA/\",\"NozzleDiameter\":0.2,\"TrayUid\":\"ACD994EE609748B2A3E769F276AAB95D\",\"SpoolWidth\":201,\"ProductionDateTime\":\"2025-03-21T18:18:00\",\"ProductionDateTimeShort\":\"20250321\",\"FilamentLength\":330,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"G01-C0-1.75-1000\"}";
 
             var (_, external) = await GetExternalFilament(json);
             
@@ -88,6 +99,17 @@
             var (_, external) = await GetExternalFilament(json);
             
             Assert.Equal("Translucent Teal", external?.Name);
+            Assert.Equal("PETG", external?.Material);
+        }
+
+        [Fact(DisplayName = "TranslucentLightBlue")]
+        public async Task TranslucentLightBlue()
+        {
+            var json = "{\"SerialNumber\":\"15AD1304\",\"TagManufacturerData\":\"rwgEAAQccS3s6tOQ\",\"MaterialVariantIdentifier\":\"G01-B0\",\"UniqueMaterialIdentifier\":\"FG01\",\"FilamentType\":\"PETG\",\"DetailedFilamentType\":\"PETG Translucent\",\"Color\":\"61B0FF80\",\"SpoolWeight\":1000,\"FilamentDiameter\":1.75,\"DryingTemperature\":65,\"DryingTime\":8,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":260,\"MinTemperatureForHotend\":230,\"XCamInfo\":\"NCE0IYQD6AMzMzM/\",\"NozzleDiameter\":0.2,\"TrayUid\":\"01D24AAB56AE407E93559DB8A34F1CCC\",\"SpoolWidth\":201,\"ProductionDateTime\":\"2025-04-19T15:27:00\",\"ProductionDateTimeShort\":\"20250419\",\"FilamentLength\":330,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"G01-B0-1.75-1000\"}";
+
+            var (_, external) = await GetExternalFilament(json);
+            
+            Assert.Equal("Translucent Light Blue", external?.Name);
             Assert.Equal("PETG", external?.Material);
         }
     }

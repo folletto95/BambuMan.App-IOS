@@ -46,5 +46,16 @@
             Assert.Equal("Support for ABS", external?.Name);
             Assert.Equal("ABS", external?.Material);
         }
+
+        [Fact(DisplayName = "PVA Clear")]
+        public async Task Clear()
+        {
+            var json = "{\"SerialNumber\":\"93438A39\",\"TagManufacturerData\":\"YwgEAART13a4HM6Q\",\"MaterialVariantIdentifier\":\"S04-Y0\",\"UniqueMaterialIdentifier\":\"FS04\",\"FilamentType\":\"PVA\",\"DetailedFilamentType\":\"PVA\",\"Color\":\"F0F1A880\",\"SpoolWeight\":500,\"FilamentDiameter\":1.75,\"DryingTemperature\":70,\"DryingTime\":8,\"BedTemperatureType\":0,\"BedTemperature\":0,\"MaxTemperatureForHotend\":250,\"MinTemperatureForHotend\":220,\"XCamInfo\":\"NCEQJyADhAMzMzM/\",\"NozzleDiameter\":0.2,\"TrayUid\":\"F237B43906C448A2BA71B222DDC3AE04\",\"SpoolWidth\":1149,\"ProductionDateTime\":\"2025-01-05T13:10:00\",\"ProductionDateTimeShort\":\"A2501040353\",\"FilamentLength\":164,\"FormatIdentifier\":2,\"ColorCount\":1,\"SecondColor\":\"00000000\",\"SkuStart\":\"S04-Y0-1.75-500\"}";
+
+            var (_, external) = await GetExternalFilament(json);
+            
+            Assert.Equal("Clear", external?.Name);
+            Assert.Equal("PVA", external?.Material);
+        }
     }
 }

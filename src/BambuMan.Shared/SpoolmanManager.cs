@@ -365,11 +365,17 @@ namespace BambuMan.Shared
 
         public async Task<ExternalFilament?> FindExternalFilament(BambuFillamentInfo info)
         {
+            var transparentFilaments = new[]
+            {
+                "bambulab_pc_clearblack_1000_175_n",
+                "bambulab_pva_clear_500_175_n"
+            };
+
             var hexColor = info.Color?.Substring(0, 6) ?? string.Empty;
             var opacity = info.Color?.Substring(6).StringToByteArray().FirstOrDefault() ?? 255;
             var transparent = opacity < 255;
             var color = hexColor;
-
+            
             var query = BambuLabExternalFilaments.AsQueryable();
 
             query = query.Where(x => x.Material.EqualsCI(info.FilamentType) ||
@@ -389,6 +395,7 @@ namespace BambuMan.Shared
                                      (x.ColorHexes != null && color != null && x.ColorHexes.Contains(color, StringComparer.OrdinalIgnoreCase)) ||
                                      (info.FilamentType.EqualsCI("ASA") && color.EqualsCI("FFFFFF") && x.ColorHex.EqualsCI("FFFAF2")) || //ASA filament hex color is different on spoolman db vs tag
                                      (info.FilamentType.EqualsCI("ASA Aero") && color.EqualsCI("E9E4D9") && x.ColorHex.EqualsCI("F5F1DD")) || //ASA filament hex color is different on spoolman db vs tag
+                                     (info.FilamentType.EqualsCI("PC") && color.EqualsCI("000000") && transparent && x.ColorHex.EqualsCI("5A5161")) || //PC Clear Black filament hex color is different on spoolman db vs tag
                                      (info.DetailedFilamentType.EqualsCI("PLA Wood") && color.EqualsCI("3F231C") && x.ColorHex.EqualsCI("4C241C")) || //PETG HF red filament hex color is different on spoolman db vs tag
                                      (info.DetailedFilamentType.EqualsCI("PETG HF") && color.EqualsCI("BC0900") && x.ColorHex.EqualsCI("EB3A3A")) || //PETG HF red filament hex color is different on spoolman db vs tag
                                      (info.DetailedFilamentType.EqualsCI("PETG Translucent") && color.EqualsCI("000000") && x.ColorHex.EqualsCI("FFFFFF")));  //PETG Translucent clear filament hex color is different on spoolman db vs tag
@@ -397,8 +404,8 @@ namespace BambuMan.Shared
 
             var resultWitColor = query.ToArray();
 #endif
-
-            query = query.Where(x => x.Translucent == transparent || x.Translucent == null && !transparent);
+            
+            query = query.Where(x => (transparentFilaments.Contains(x.Id) && transparent) ||  x.Translucent == transparent || x.Translucent == null && !transparent);
 
 #if DEBUG
             var resultWitTransparency = query.ToArray();
@@ -439,6 +446,8 @@ namespace BambuMan.Shared
                 if (info.MaterialVariantIdentifier.EqualsCI("A05-T3")) colors = ["0047BB", "BB22A3"];
                 if (info.MaterialVariantIdentifier.EqualsCI("A05-T4")) colors = ["60A4E8", "4CE4A0"];
                 if (info.MaterialVariantIdentifier.EqualsCI("A05-T5")) colors = ["000000", "A34342"];
+                if (info.MaterialVariantIdentifier.EqualsCI("A00-M5")) colors = ["6FCAEF", "8573DD"];
+                if (info.MaterialVariantIdentifier.EqualsCI("A00-M6")) colors = ["ED9558", "CE4406"];
 
                 query = BambuLabExternalFilaments
                     .Where(x => x.Material == info.FilamentType)
@@ -448,7 +457,7 @@ namespace BambuMan.Shared
 
             query = info.DetailedFilamentType switch
             {
-                var type when type.ContainsCI("Basic") => query.Where(x => x.Finish == null && x.Pattern == null),
+                var type when type.ContainsCI("Basic") => query.Where(x => x.Finish == null && x.Pattern == null && !x.Name.ContainsCI("Aero")),
                 var type when type.ContainsCI("Matte") => query.Where(x => x.Finish == Finish.Matte),
                 var type when type.ContainsCI("Glow") => query.Where(x => x.Glow == true),
                 var type when type.ContainsCI("Silk+") => query.Where(x => x.Name.ContainsCI("Silk+")),
