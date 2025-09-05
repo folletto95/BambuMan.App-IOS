@@ -18,10 +18,6 @@ namespace BambuMan
     {
         public static MauiApp CreateMauiApp()
         {
-#if ANDROID
-            MainApplication.InitBuildVersion();
-            MainApplication.SetupSerilog();
-#endif
             var builder = MauiApp.CreateBuilder();
             
             builder
@@ -67,9 +63,6 @@ namespace BambuMan
 
             
 
-#if ANDROID
-            MainApplication.SetupImplementations(services);
-#endif
 
 #if DEBUG
             builder.Logging.AddDebug();

@@ -7,8 +7,7 @@ The app tries to match the tag info with the existing [SpoolmanDB](https://githu
 If you use [OpenSpoolMan](https://github.com/drndos/openspoolman) to track your filament usage, it will be able to automatically match the spool inserted into the `AMS`, no additional action is necessary.
 
 ## The app is available in two versions
- - Android applications (your phone has to support `NFC`)
-   <img src="https://bambuman.github.io/android_app.jpg" alt="android app screenshot" width="500" height="532" />
+ - iOS application (your device has to support `NFC`)
  - Windows desktop application (a `PCSC` compatible `NFC` reader like [ACR122U](https://www.acs.com.hk/en/products/3/acr122u-usb-nfc-reader/) or [ACR1252U](https://www.acs.com.hk/en/products/342/acr1252u-usb-nfc-reader-iii-nfc-forum-certified-reader/) is needed)
    <img src="https://bambuman.github.io/desktop_app.jpg" alt="desktop app screenshot" width="700" height="411" />
 ## Known limitations
@@ -23,12 +22,12 @@ If you use [OpenSpoolMan](https://github.com/drndos/openspoolman) to track your 
 
 ## How to setup
 
-### Android
- 1. Install the apk, ether manually or use f-droid. 
- 2. Go to settings and scan the Spoolman url with qr-code or enter it manually.
-	 - BambuMan supports basic authentication, url format http[s]://username:password@host[:port]/
-	 - If the password contains special characters (like @ :) it must be url encoded
- 3. Go back to main window. BambuMan will connect to Spoolman and creates the necessary extra fields and default vendor.
+### iOS
+ 1. Install the app from TestFlight or compile from source.
+ 2. Go to settings and scan the Spoolman URL with QR code or enter it manually.
+         - BambuMan supports basic authentication, URL format http[s]://username:password@host[:port]/
+         - If the password contains special characters (like @ :) it must be URL encoded
+ 3. Go back to the main window. BambuMan will connect to Spoolman and create the necessary extra fields and default vendor.
  4. Once all three status `Settings`, `Spoolman` and `NFC` are green, you can start reading `NFC` tags.
 
 ### Windows
@@ -41,13 +40,7 @@ If you use [OpenSpoolMan](https://github.com/drndos/openspoolman) to track your 
  4. The app connects to Spoolman and creates the necessary extra fields and default vendor.
  5. You can start reading `NFC` tags.
 
-## f-droid repository
-
-If you have f-droid installed on your phone, you can install BambuMan from our f-droid [repository](https://bambuman.github.io/repo).
-
-<img src="https://bambuman.github.io/repo/index.png" alt="BambuMan f-droid repository" width="300" height="300" />
-
-## Tested with 
+## Tested with
 
   - Spoolman v0.22.1
   - OpenSpoolMan v0.1.8
@@ -57,7 +50,6 @@ If you have f-droid installed on your phone, you can install BambuMan from our f
  - Dynamic `NFC` tag mapping to `Spoolman DB` external filament (GitHub repo with config file)
  - Make extra fields optional
  - More intuitive UI
- - Google Play Store availability
 
 ## Big thanks to
 - [Bambu-Research-Group](https://github.com/Bambu-Research-Group) for reverse engineering the NFC tag specification

@@ -277,7 +277,6 @@ namespace BambuMan.UI.Main
         /// <returns></returns>
         private async Task AutoStartAsync()
         {
-            // Some delay to prevent Java.Lang.IllegalStateException "Foreground dispatch can only be enabled when your activity is resumed" on Android
             await Task.Delay(500);
             await StartListeningIfNotiOs();
         }
