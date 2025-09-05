@@ -1,0 +1,198 @@
+// !$*UTF8*$!
+{
+archiveVersion = 1;
+classes = {};
+objectVersion = 55;
+objects = {
+
+/* Begin PBXBuildFile section */
+f772b8df7d2a42eba88c93c2 /* BambuManIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7138ba3d74d846f79d32c2b3 /* BambuManIOSApp.swift */; };
+0e9101eac1194168abe31880 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3f080930b5c84e2b86522144 /* ContentView.swift */; };
+3a933379fc0b421db565fdfb /* NFCViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0d34d0f6aa764858b4c3903c /* NFCViewModel.swift */; };
+af0cc36200824634ba1e222c /* SpoolManService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 448eab166abe4955bba73346 /* SpoolManService.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+7138ba3d74d846f79d32c2b3 /* BambuManIOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BambuManIOSApp.swift; sourceTree = "<group>"; };
+3f080930b5c84e2b86522144 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+0d34d0f6aa764858b4c3903c /* NFCViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCViewModel.swift; sourceTree = "<group>"; };
+448eab166abe4955bba73346 /* SpoolManService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoolManService.swift; sourceTree = "<group>"; };
+2a6ad02721654a1595fdc136 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+3c6d50f1a6234f58abe3e169 /* BambuManIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BambuManIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+1f1f25bb5ec745c6a7bcf489 /* Frameworks */ = {
+isa = PBXFrameworksBuildPhase;
+buildActionMask = 2147483647;
+files = (
+);
+runOnlyForDeploymentPostprocessing = 0;
+};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+e52addc4a42946b7ba0d6975 = {
+isa = PBXGroup;
+children = (
+9d06888f2c4e4e7b855e8966 /* BambuManIOS */,
+7e4ea91ae677453dab2edb59 /* Products */,
+);
+sourceTree = "<group>";
+};
+9d06888f2c4e4e7b855e8966 /* BambuManIOS */ = {
+isa = PBXGroup;
+children = (
+7138ba3d74d846f79d32c2b3 /* BambuManIOSApp.swift */,
+3f080930b5c84e2b86522144 /* ContentView.swift */,
+0d34d0f6aa764858b4c3903c /* NFCViewModel.swift */,
+448eab166abe4955bba73346 /* SpoolManService.swift */,
+2a6ad02721654a1595fdc136 /* Info.plist */,
+);
+path = BambuManIOS;
+sourceTree = "<group>";
+};
+7e4ea91ae677453dab2edb59 /* Products */ = {
+isa = PBXGroup;
+children = (
+3c6d50f1a6234f58abe3e169 /* BambuManIOS.app */,
+);
+sourceTree = "<group>";
+};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+96939189c7fa442e8b3e81f1 /* BambuManIOS */ = {
+isa = PBXNativeTarget;
+buildConfigurationList = 5fb5299ac6ca4c7c99903373 /* Build configuration list for PBXNativeTarget "BambuManIOS" */;
+buildPhases = (
+09be90b54ec84a4fa29ec42e /* Sources */,
+1f1f25bb5ec745c6a7bcf489 /* Frameworks */,
+7a1fcf0eac7b431c8be0065a /* Resources */,
+);
+buildRules = (
+);
+dependencies = (
+);
+name = BambuManIOS;
+productName = BambuManIOS;
+productReference = 3c6d50f1a6234f58abe3e169 /* BambuManIOS.app */;
+productType = "com.apple.product-type.application";
+};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+1d71649ca9154909915e9423 /* Project object */ = {
+isa = PBXProject;
+attributes = {
+LastSwiftUpdateCheck = 1420;
+LastUpgradeCheck = 1420;
+};
+buildConfigurationList = cf86913d66264276b2f66fc2 /* Build configuration list for PBXProject "BambuManIOS" */;
+compatibilityVersion = "Xcode 14.0";
+developmentRegion = en;
+hasScannedForEncodings = 0;
+knownRegions = (
+en,
+);
+mainGroup = e52addc4a42946b7ba0d6975;
+productRefGroup = 7e4ea91ae677453dab2edb59 /* Products */;
+projectDirPath = "";
+projectRoot = "";
+targets = (
+96939189c7fa442e8b3e81f1 /* BambuManIOS */,
+);
+};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+7a1fcf0eac7b431c8be0065a /* Resources */ = {
+isa = PBXResourcesBuildPhase;
+buildActionMask = 2147483647;
+files = (
+);
+runOnlyForDeploymentPostprocessing = 0;
+};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+09be90b54ec84a4fa29ec42e /* Sources */ = {
+isa = PBXSourcesBuildPhase;
+buildActionMask = 2147483647;
+files = (
+f772b8df7d2a42eba88c93c2 /* BambuManIOSApp.swift in Sources */,
+0e9101eac1194168abe31880 /* ContentView.swift in Sources */,
+3a933379fc0b421db565fdfb /* NFCViewModel.swift in Sources */,
+af0cc36200824634ba1e222c /* SpoolManService.swift in Sources */,
+);
+runOnlyForDeploymentPostprocessing = 0;
+};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+f80300504ac04ce3b91b3b71 /* Debug */ = {
+isa = XCBuildConfiguration;
+buildSettings = {
+PRODUCT_NAME = "$(TARGET_NAME)";
+SDKROOT = iphoneos;
+};
+name = Debug;
+};
+8a984d58a7384cb4b47b90b5 /* Release */ = {
+isa = XCBuildConfiguration;
+buildSettings = {
+PRODUCT_NAME = "$(TARGET_NAME)";
+SDKROOT = iphoneos;
+};
+name = Release;
+};
+99dfd1cbf3774595bf25aae7 /* Debug */ = {
+isa = XCBuildConfiguration;
+buildSettings = {
+INFOPLIST_FILE = BambuManIOS/Info.plist;
+LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+PRODUCT_BUNDLE_IDENTIFIER = com.example.BambuManIOS;
+PRODUCT_NAME = "$(TARGET_NAME)";
+SWIFT_VERSION = 5.0;
+TARGETED_DEVICE_FAMILY = "1,2";
+};
+name = Debug;
+};
+d22ca96c9c064e79b40f6ec0 /* Release */ = {
+isa = XCBuildConfiguration;
+buildSettings = {
+INFOPLIST_FILE = BambuManIOS/Info.plist;
+LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+PRODUCT_BUNDLE_IDENTIFIER = com.example.BambuManIOS;
+PRODUCT_NAME = "$(TARGET_NAME)";
+SWIFT_VERSION = 5.0;
+TARGETED_DEVICE_FAMILY = "1,2";
+};
+name = Release;
+};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+cf86913d66264276b2f66fc2 /* Build configuration list for PBXProject "BambuManIOS" */ = {
+isa = XCConfigurationList;
+buildConfigurations = (
+f80300504ac04ce3b91b3b71 /* Debug */,
+8a984d58a7384cb4b47b90b5 /* Release */,
+);
+defaultConfigurationIsVisible = 0;
+defaultConfigurationName = Release;
+};
+5fb5299ac6ca4c7c99903373 /* Build configuration list for PBXNativeTarget "BambuManIOS" */ = {
+isa = XCConfigurationList;
+buildConfigurations = (
+99dfd1cbf3774595bf25aae7 /* Debug */,
+d22ca96c9c064e79b40f6ec0 /* Release */,
+);
+defaultConfigurationIsVisible = 0;
+defaultConfigurationName = Release;
+};
+/* End XCConfigurationList section */
+
+};
+rootObject = 1d71649ca9154909915e9423 /* Project object */;
+}
