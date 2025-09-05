@@ -5,7 +5,7 @@ struct ContentView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            Text("\uD83D\uDCE6 BambuMan iOS")
+            Text("📦 BambuMan iOS")
                 .font(.title)
                 .bold()
 
