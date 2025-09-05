@@ -1,0 +1,40 @@
+name: Build iOS App
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew install cocoapods
+          pod install --project-directory=BambuManIOS || true
+
+      - name: Build IPA
+        run: |
+          xcodebuild \
+            -scheme BambuManIOS \
+            -sdk iphoneos \
+            -configuration Release \
+            archive -archivePath $PWD/build/BambuManIOS.xcarchive \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+
+          xcodebuild \
+            -exportArchive \
+            -archivePath $PWD/build/BambuManIOS.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath $PWD/build/ipa
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: BambuManIOS
+          path: build/ipa/*.ipa
