@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net9.0-android;net9.0-ios;</TargetFrameworks>
+                <TargetFramework>net9.0-ios</TargetFramework>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
 
@@ -33,7 +33,6 @@
 		<WindowsPackageType>None</WindowsPackageType>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 		<Title>BambuMan</Title>
 		<Authors>Noismaster</Authors>
 		<Product>BambuMan</Product>
@@ -72,26 +71,6 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <AndroidResource Remove="NewFolder1\**" />
-	  <AndroidResource Remove="Resources\drawable\**" />
-	  <AndroidResource Remove="Resources\NewFolder\**" />
-	  <Compile Remove="NewFolder1\**" />
-	  <Compile Remove="Resources\drawable\**" />
-	  <Compile Remove="Resources\NewFolder\**" />
-	  <EmbeddedResource Remove="NewFolder1\**" />
-	  <EmbeddedResource Remove="Resources\drawable\**" />
-	  <EmbeddedResource Remove="Resources\NewFolder\**" />
-	  <MauiCss Remove="NewFolder1\**" />
-	  <MauiCss Remove="Resources\drawable\**" />
-	  <MauiCss Remove="Resources\NewFolder\**" />
-	  <MauiXaml Remove="NewFolder1\**" />
-	  <MauiXaml Remove="Resources\drawable\**" />
-	  <MauiXaml Remove="Resources\NewFolder\**" />
-	  <None Remove="NewFolder1\**" />
-	  <None Remove="Resources\drawable\**" />
-	  <None Remove="Resources\NewFolder\**" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.90" />
@@ -130,9 +109,5 @@
 	  </MauiXaml>
 	</ItemGroup>
 	
-	<Target Name="ReplaceManifest" BeforeTargets="PreBuildEvent" Condition=" '$(GITHUB_CI)' == '1' ">
-		<XmlPoke XmlInputPath="Platforms\Android\AndroidManifest.xml" Namespaces="&lt;Namespace Prefix='android' Uri='http://schemas.android.com/apk/res/android' /&gt;" Query="manifest/@android:versionCode" Value="$(GITHUB_VERSION_CODE)" />
-		<XmlPoke XmlInputPath="Platforms\Android\AndroidManifest.xml" Namespaces="&lt;Namespace Prefix='android' Uri='http://schemas.android.com/apk/res/android' /&gt;" Query="manifest/@android:versionName" Value="$(GITHUB_VERSION)" />
-	</Target>
 
 </Project>
