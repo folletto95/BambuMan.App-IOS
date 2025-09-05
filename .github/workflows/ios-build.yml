@@ -21,6 +21,7 @@ jobs:
       - name: Build IPA
         env:
           DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          
         run: |
           xcodebuild \
             -project BambuManIOS.xcodeproj \
@@ -30,12 +31,14 @@ jobs:
             archive -archivePath $PWD/build/BambuManIOS.xcarchive \
             DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
+
           xcodebuild \
             -exportArchive \
             -archivePath $PWD/build/BambuManIOS.xcarchive \
             -exportOptionsPlist ExportOptions.plist \
             -exportPath $PWD/build/ipa \
             DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM
+
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
