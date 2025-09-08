@@ -14,6 +14,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Import Distribution Certificate
+        env:
+          CERTIFICATE_P12: ${{ secrets.CERTIFICATE_P12 }}
+          CERT_PASSWORD: ${{ secrets.CERT_PASSWORD }}
+        run: |
+          echo "$CERTIFICATE_P12" | base64 --decode > certificate.p12
+          security create-keychain -p "" build.keychain
+          security import certificate.p12 -k build.keychain \
+            -P "$CERT_PASSWORD" -T /usr/bin/codesign
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          security set-keychain-settings build.keychain
+
+      - name: Install Provisioning Profile
+        env:
+          PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE }}
+        run: |
+          PROFILE_DIR=~/Library/MobileDevice/Provisioning\ Profiles
+          mkdir -p "$PROFILE_DIR"
+          echo "$PROVISIONING_PROFILE" | base64 --decode > \
+            "$PROFILE_DIR/profile.mobileprovision"
+
       - name: Install dependencies
         run: |
           brew install cocoapods
@@ -26,8 +48,7 @@ jobs:
             -scheme BambuManIOS \
             -sdk iphoneos \
             -configuration Release \
-            archive -archivePath $PWD/build/BambuManIOS.xcarchive \
-            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+            archive -archivePath $PWD/build/BambuManIOS.xcarchive
 
 
       - name: Export archive
@@ -36,8 +57,7 @@ jobs:
             -exportArchive \
             -archivePath $PWD/build/BambuManIOS.xcarchive \
             -exportOptionsPlist ExportOptions.plist \
-            -exportPath $PWD/build/ipa \
-            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+            -exportPath $PWD/build/ipa
 
 
       - name: Upload IPA
